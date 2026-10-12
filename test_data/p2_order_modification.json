@@ -1,0 +1,117 @@
+{
+  "case_id": "CASE_P2_001",
+  "policy_id": "P2",
+  "policy_type": "order_modification",
+  "scenario": "Customer asks to change the delivery address while the order is not yet shipped. The mock system confirms the field is editable.",
+  "customer": {
+    "customer_id": "CUST_1002",
+    "authenticated_customer_id": "CUST_1002",
+    "customer_authorization_status": "verified"
+  },
+  "request": {
+    "intent": "order_modification",
+    "order_id": "ORD_5002",
+    "requested_field": "delivery_address",
+    "new_value": "12 Lake View Road, Hyderabad"
+  },
+  "claim_facts": {
+    "order_exists": true,
+    "order_customer_id": "CUST_1002",
+    "order_status": "confirmed",
+    "shipment_status": "not_shipped",
+    "field_modification_allowed": true,
+    "new_value_valid": true,
+    "modification_restrictions_satisfied": true,
+    "update_system_status": "not_attempted"
+  },
+  "evidence_nodes": [
+    {
+      "evidence_id": "EV_P2_01",
+      "type": "order_record",
+      "source": "mock_order_system",
+      "attributes": {
+        "order_id": "ORD_5002",
+        "customer_id": "CUST_1002",
+        "order_status": "confirmed",
+        "shipment_status": "not_shipped"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P2_02",
+      "type": "authentication_event",
+      "source": "mock_auth_service",
+      "attributes": {
+        "authenticated_customer_id": "CUST_1002",
+        "method": "one_time_code",
+        "result": "success"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P2_03",
+      "type": "modification_capability",
+      "source": "mock_order_system",
+      "attributes": {
+        "field": "delivery_address",
+        "allowed": true,
+        "reason": "Order not yet shipped"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P2_04",
+      "type": "address_input",
+      "source": "customer_message",
+      "attributes": {
+        "new_address": "12 Lake View Road, Hyderabad",
+        "validation_status": "valid"
+      },
+      "verification_status": "verified"
+    }
+  ],
+  "edges": [
+    {
+      "source": "CUST_1002",
+      "relation": "PLACED",
+      "target": "ORD_5002"
+    },
+    {
+      "source": "CUST_1002",
+      "relation": "AUTHENTICATED_BY",
+      "target": "EV_P2_02"
+    },
+    {
+      "source": "ORD_5002",
+      "relation": "HAS_STATUS_EVIDENCE",
+      "target": "EV_P2_01"
+    },
+    {
+      "source": "ORD_5002",
+      "relation": "HAS_MODIFICATION_RULE",
+      "target": "EV_P2_03"
+    },
+    {
+      "source": "EV_P2_04",
+      "relation": "REQUESTS_CHANGE_TO",
+      "target": "delivery_address"
+    }
+  ],
+  "derived_values": {
+    "requested_field": "delivery_address",
+    "field_modification_allowed": true,
+    "new_value_valid": true
+  },
+  "expected_csp": {
+    "P2_L1": "SATISFIED",
+    "P2_L2": "SATISFIED",
+    "P2_L3": "SATISFIED",
+    "P2_L4": "SATISFIED",
+    "P2_L6": "SATISFIED",
+    "P2_L7": "SATISFIED",
+    "P2_L8": "SATISFIED",
+    "P2_L9": "SATISFIED"
+  },
+  "recommended_action": "update_permitted_field",
+  "notes": "update_system_status remains not_attempted until an action is executed; do not mark the update successful before system confirmation."
+}

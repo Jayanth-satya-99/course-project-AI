@@ -1,0 +1,114 @@
+{
+  "case_id": "CASE_P3_001",
+  "policy_id": "P3",
+  "policy_type": "order_cancellation",
+  "scenario": "Customer requests cancellation before shipment. The order system confirms cancellation is available and the mock cancellation succeeds.",
+  "customer": {
+    "customer_id": "CUST_1003",
+    "authenticated_customer_id": "CUST_1003",
+    "customer_authorization_status": "verified"
+  },
+  "request": {
+    "intent": "order_cancellation",
+    "order_id": "ORD_5003",
+    "reason": "Ordered by mistake"
+  },
+  "claim_facts": {
+    "order_exists": true,
+    "order_status": "confirmed",
+    "shipment_status": "not_shipped",
+    "cancellation_check_status": "completed",
+    "cancellation_allowed": true,
+    "cancellation_system_status": "confirmed",
+    "payment_status": "paid",
+    "refund_eligibility_check_status": "completed",
+    "refund_status": "pending"
+  },
+  "evidence_nodes": [
+    {
+      "evidence_id": "EV_P3_01",
+      "type": "order_record",
+      "source": "mock_order_system",
+      "attributes": {
+        "order_id": "ORD_5003",
+        "customer_id": "CUST_1003",
+        "order_status": "confirmed",
+        "shipment_status": "not_shipped"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P3_02",
+      "type": "authentication_event",
+      "source": "mock_auth_service",
+      "attributes": {
+        "authenticated_customer_id": "CUST_1003",
+        "result": "success"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P3_03",
+      "type": "cancellation_check",
+      "source": "mock_order_system",
+      "attributes": {
+        "cancellation_allowed": true,
+        "check_status": "completed"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P3_04",
+      "type": "cancellation_event",
+      "source": "mock_order_system",
+      "attributes": {
+        "status": "confirmed",
+        "timestamp": "2026-10-11T10:30:00+05:30"
+      },
+      "verification_status": "verified"
+    }
+  ],
+  "edges": [
+    {
+      "source": "CUST_1003",
+      "relation": "PLACED",
+      "target": "ORD_5003"
+    },
+    {
+      "source": "ORD_5003",
+      "relation": "HAS_STATUS_EVIDENCE",
+      "target": "EV_P3_01"
+    },
+    {
+      "source": "CUST_1003",
+      "relation": "AUTHENTICATED_BY",
+      "target": "EV_P3_02"
+    },
+    {
+      "source": "ORD_5003",
+      "relation": "HAS_CANCELLATION_CHECK",
+      "target": "EV_P3_03"
+    },
+    {
+      "source": "ORD_5003",
+      "relation": "HAS_CANCELLATION_EVENT",
+      "target": "EV_P3_04"
+    }
+  ],
+  "derived_values": {
+    "cancellation_allowed": true,
+    "cancellation_system_status": "confirmed"
+  },
+  "expected_csp": {
+    "P3_L1": "SATISFIED",
+    "P3_L2": "SATISFIED",
+    "P3_L3": "SATISFIED",
+    "P3_L4": "SATISFIED",
+    "P3_L5": "SATISFIED",
+    "P3_L6": "SATISFIED",
+    "P3_L9": "SATISFIED",
+    "P3_L10": "SATISFIED"
+  },
+  "recommended_action": "check_refund_status",
+  "notes": "Cancellation is confirmed; the refund is pending and must not be reported as completed."
+}

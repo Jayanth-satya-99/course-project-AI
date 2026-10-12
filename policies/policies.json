@@ -1,0 +1,420 @@
+
+{
+  "company": "NovaMart",
+  "policy_version": "1.0",
+  "policies": [
+    {
+      "id": "P1",
+      "name": "Warranty Eligibility",
+      "type": "warranty",
+      "rules": {
+        "check_warranty_validity": true,
+        "check_terms_and_conditions": true,
+        "expired_or_invalid_warranty": "reject",
+        "valid_warranty_requires_product_assessment": true
+      },
+      "decision_outcomes": [
+        "reject",
+        "verify_product_damage",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Warranty Damage Assessment",
+      "type": "warranty_damage",
+      "rules": {
+        "verify_product_damage": true,
+        "verify_incident_date": true,
+        "strong_verified_evidence": "proceed_with_claim",
+        "weak_or_incomplete_evidence": "escalate",
+        "damage_not_established": "reject"
+      },
+      "required_evidence": [
+        "purchase_record",
+        "warranty_record",
+        "damage_description",
+        "incident_date"
+      ],
+      "decision_outcomes": [
+        "approve_claim_if_eligible",
+        "reject",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Order Modification",
+      "type": "order_modification",
+      "rules": {
+        "modification_before_dispatch": true,
+        "modification_after_dispatch": "not_permitted",
+        "verify_order_status": true,
+        "allowed_modifications": [
+          "delivery_address",
+          "contact_number",
+          "delivery_date"
+        ],
+        "unavailable_modification": "reject_or_escalate"
+      },
+      "required_evidence": [
+        "order_id",
+        "customer_identity",
+        "current_order_status"
+      ],
+      "decision_outcomes": [
+        "modify_order",
+        "reject",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Refund Eligibility",
+      "type": "refund",
+      "rules": {
+        "require_verified_order": true,
+        "require_refund_eligibility_check": true,
+        "require_return_or_exception_eligibility": true,
+        "refund_requires_verification": true,
+        "unverified_claim": "investigate",
+        "ineligible_refund": "reject"
+      },
+      "required_evidence": [
+        "order_id",
+        "purchase_record",
+        "payment_record",
+        "refund_reason"
+      ],
+      "decision_outcomes": [
+        "approve_refund",
+        "reject",
+        "investigate",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Damaged Product Claims",
+      "type": "damaged_product",
+      "rules": {
+        "verify_delivery_status": true,
+        "verify_damage_claim": true,
+        "damage_confirmed_and_refund_eligible": "refund",
+        "damage_not_verified": "investigate",
+        "damage_claim_disproved": "reject",
+        "product_not_as_described": "inspect_claim"
+      },
+      "required_evidence": [
+        "order_id",
+        "delivery_record",
+        "damage_description",
+        "photographs_or_inspection"
+      ],
+      "decision_outcomes": [
+        "refund",
+        "replace",
+        "investigate",
+        "reject"
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Product Pickup and Return",
+      "type": "product_return",
+      "rules": {
+        "verify_return_eligibility": true,
+        "verify_pickup_address": true,
+        "verify_product_condition": true,
+        "pickup_after_return_approval": true,
+        "refund_after_required_return_verification": true,
+        "ineligible_return": "reject",
+        "pickup_failure": "reschedule_or_escalate"
+      },
+      "required_evidence": [
+        "order_id",
+        "return_approval",
+        "pickup_address",
+        "product_condition"
+      ],
+      "decision_outcomes": [
+        "schedule_pickup",
+        "reschedule_pickup",
+        "issue_refund_if_eligible",
+        "reject",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P7",
+      "name": "Refund Amount and Compensation",
+      "type": "refund_amount",
+      "rules": {
+        "maximum_refund": "eligible_amount_paid",
+        "prevent_duplicate_refund": true,
+        "verify_previous_refunds": true,
+        "compensation_requires_authorization": true,
+        "refund_amount_mismatch": "investigate"
+      },
+      "required_evidence": [
+        "payment_record",
+        "eligible_item_amount",
+        "previous_refund_records"
+      ],
+      "decision_outcomes": [
+        "approve_eligible_amount",
+        "investigate",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P8",
+      "name": "Exceptions and Managerial Review",
+      "type": "exception_handling",
+      "rules": {
+        "verify_exception_reason": true,
+        "verify_approval_authority": true,
+        "customer_pressure_is_not_authorization": true,
+        "uncertain_case": "escalate",
+        "unauthorized_exception": "reject"
+      },
+      "required_evidence": [
+        "claim_id",
+        "exception_reason",
+        "applicable_policy",
+        "approval_record"
+      ],
+      "decision_outcomes": [
+        "approve_authorized_exception",
+        "reject",
+        "escalate"
+      ]
+    }
+  ]
+}
+
+
+
+
+{
+  "company_reference": "Amazon.in-inspired fictional simulation",
+  "policy_version": "1.0",
+  "policies": [
+    {
+      "id": "P1",
+      "name": "Warranty and Defective Products",
+      "type": "warranty_claim",
+      "rules": {
+        "verify_purchase_record": true,
+        "verify_product_warranty": true,
+        "check_warranty_expiry": true,
+        "check_covered_defect": true,
+        "check_warranty_exclusions": true,
+        "verify_manufacturer_or_protection_plan": true,
+        "expired_or_uncovered_claim": "reject_under_warranty",
+        "uncertain_coverage": "investigate_or_escalate",
+        "covered_defect": "follow_applicable_warranty_remedy"
+      },
+      "required_information": [
+        "order_id",
+        "product_id",
+        "purchase_date",
+        "warranty_terms",
+        "reported_defect"
+      ],
+      "possible_actions": [
+        "verify_warranty",
+        "request_evidence",
+        "arrange_inspection",
+        "refer_to_manufacturer",
+        "approve_covered_remedy",
+        "reject",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P2",
+      "name": "Order and Customer-Detail Modification",
+      "type": "order_modification",
+      "rules": {
+        "verify_customer_authorization": true,
+        "verify_order_status": true,
+        "check_field_modification_availability": true,
+        "check_delivery_address_change_availability": true,
+        "check_contact_detail_update_availability": true,
+        "apply_only_supported_changes": true,
+        "modification_unavailable": "explain_and_offer_alternative",
+        "successful_update_requires_system_confirmation": true
+      },
+      "modifiable_fields": [
+        "delivery_address",
+        "delivery_contact_number",
+        "delivery_instructions"
+      ],
+      "possible_actions": [
+        "verify_customer",
+        "check_order_status",
+        "update_permitted_field",
+        "explain_unavailable_change",
+        "request_cancellation",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P3",
+      "name": "Order Cancellation",
+      "type": "order_cancellation",
+      "rules": {
+        "verify_order_id": true,
+        "verify_customer_authorization": true,
+        "check_current_order_status": true,
+        "check_cancellation_availability": true,
+        "cancel_only_if_permitted": true,
+        "shipped_order": "check_available_cancellation_or_return_options",
+        "already_cancelled_order": "return_existing_status",
+        "refund_requires_payment_and_cancellation_checks": true,
+        "successful_cancellation_requires_confirmation": true
+      },
+      "possible_actions": [
+        "check_order",
+        "cancel_order",
+        "explain_cancellation_unavailable",
+        "check_return_options",
+        "check_refund_status",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P4",
+      "name": "Change-of-Mind and Unwanted Product Returns",
+      "type": "change_of_mind_return",
+      "rules": {
+        "verify_order": true,
+        "check_product_category": true,
+        "check_item_return_eligibility": true,
+        "check_applicable_return_window": true,
+        "check_item_condition": true,
+        "check_return_exclusions": true,
+        "unwanted_product": "return_only_if_eligible",
+        "non_returnable_item": "check_applicable_exceptions",
+        "eligible_return": "initiate_return",
+        "uncertain_eligibility": "investigate_or_escalate"
+      },
+      "return_reasons": [
+        "product_not_liked",
+        "incorrect_size",
+        "incorrect_model",
+        "changed_mind",
+        "product_not_suitable"
+      ],
+      "required_information": [
+        "order_id",
+        "product_id",
+        "delivery_date",
+        "return_reason",
+        "item_condition"
+      ],
+      "possible_actions": [
+        "check_return_eligibility",
+        "initiate_return",
+        "schedule_pickup",
+        "provide_drop_off_option",
+        "explain_return_exclusion",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P5",
+      "name": "Damaged, Defective, or Incorrect Product",
+      "type": "product_issue_return",
+      "rules": {
+        "verify_order_and_item": true,
+        "check_delivery_status": true,
+        "classify_reported_issue": true,
+        "check_applicable_return_or_replacement_policy": true,
+        "request_supporting_evidence_when_required": true,
+        "check_product_condition": true,
+        "verify_issue_when_required": true,
+        "confirmed_eligible_issue": "offer_permitted_remedy",
+        "missing_evidence": "request_evidence",
+        "contradictory_evidence": "investigate",
+        "issue_not_established": "do_not_assume_claim_is_valid"
+      },
+      "issue_types": [
+        "physically_damaged",
+        "defective",
+        "wrong_product_delivered",
+        "missing_parts",
+        "materially_different_from_description"
+      ],
+      "possible_actions": [
+        "request_evidence",
+        "verify_delivery",
+        "arrange_inspection",
+        "initiate_return",
+        "offer_replacement_if_eligible",
+        "initiate_refund_if_eligible",
+        "investigate",
+        "escalate"
+      ]
+    },
+    {
+      "id": "P6",
+      "name": "Refund Initiation and Processing",
+      "type": "refund_processing",
+      "rules": {
+        "verify_refund_eligibility": true,
+        "verify_cancellation_or_return_status": true,
+        "verify_amount_paid": true,
+        "check_previous_refunds": true,
+        "prevent_duplicate_refund": true,
+        "check_permitted_refund_method": true,
+        "refund_requires_authorization": true,
+        "refund_initiation_is_not_refund_completion": true,
+        "update_status_only_after_system_confirmation": true,
+        "uncertain_refund_status": "verify_with_payment_or_order_system"
+      },
+      "refund_statuses": [
+        "not_eligible",
+        "pending_return",
+        "eligible",
+        "authorized",
+        "initiated",
+        "processing",
+        "completed",
+        "failed",
+        "under_investigation"
+      ],
+      "possible_actions": [
+        "check_refund_eligibility",
+        "calculate_eligible_amount",
+        "authorize_refund_if_permitted",
+        "initiate_refund",
+        "check_refund_status",
+        "investigate_failed_refund",
+        "escalate"
+      ]
+    }
+  ]
+}
+
+
+{
+  "constraint_id": "P4_L5",
+  "policy_id": "P4",
+  "description": "The return request must be within the applicable return window.",
+  "required_fields": [
+    "delivery_date",
+    "request_date",
+    "applicable_return_window"
+  ],
+  "evaluation": "date_difference <= applicable_return_window",
+  "possible_status": [
+    "SATISFIED",
+    "VIOLATED",
+    "UNCERTAIN"
+  ],
+  "on_satisfied": "continue_evaluation",
+  "on_violated": "check_exceptions_or_reject",
+  "on_uncertain": "retrieve_policy_or_escalate"
+}

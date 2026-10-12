@@ -1,0 +1,127 @@
+{
+  "case_id": "CASE_P6_001",
+  "policy_id": "P6",
+  "policy_type": "refund_processing",
+  "scenario": "A returned product has been received and a partial refund is eligible. A previous partial refund exists, so the remaining refundable amount must be calculated before authorization.",
+  "customer": {
+    "customer_id": "CUST_1006",
+    "authenticated_customer_id": "CUST_1006",
+    "customer_authorization_status": "verified"
+  },
+  "request": {
+    "intent": "refund_processing",
+    "order_id": "ORD_5006",
+    "requested_refund_amount": 1200
+  },
+  "claim_facts": {
+    "order_id": "ORD_5006",
+    "payment_record": {
+      "payment_id": "PAY_6006",
+      "amount_paid": 5000,
+      "currency": "INR"
+    },
+    "return_cancellation_status": "return_received",
+    "refund_eligibility_status": "eligible",
+    "amount_paid": 5000,
+    "previous_refund_check_status": "completed",
+    "previous_refund_amount": 800,
+    "remaining_refundable_amount": 4200,
+    "proposed_refund_amount": 1200,
+    "refund_authorization_status": "pending",
+    "refund_prerequisites_status": "satisfied",
+    "refund_method_allowed": true,
+    "refund_initiation_system_status": "not_attempted",
+    "refund_status": "eligible",
+    "refund_status_verification": "verified",
+    "refund_completion_confirmed": false
+  },
+  "evidence_nodes": [
+    {
+      "evidence_id": "EV_P6_01",
+      "type": "payment_record",
+      "source": "mock_payment_system",
+      "attributes": {
+        "payment_id": "PAY_6006",
+        "order_id": "ORD_5006",
+        "amount_paid": 5000,
+        "currency": "INR"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P6_02",
+      "type": "return_record",
+      "source": "mock_returns_service",
+      "attributes": {
+        "order_id": "ORD_5006",
+        "return_status": "return_received"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P6_03",
+      "type": "refund_history",
+      "source": "mock_payment_system",
+      "attributes": {
+        "previous_refund_amount": 800,
+        "remaining_refundable_amount": 4200
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P6_04",
+      "type": "refund_eligibility_result",
+      "source": "mock_refund_rules",
+      "attributes": {
+        "eligibility": "eligible",
+        "proposed_refund_amount": 1200,
+        "method_allowed": true
+      },
+      "verification_status": "verified"
+    }
+  ],
+  "edges": [
+    {
+      "source": "CUST_1006",
+      "relation": "PLACED",
+      "target": "ORD_5006"
+    },
+    {
+      "source": "ORD_5006",
+      "relation": "PAID_BY",
+      "target": "EV_P6_01"
+    },
+    {
+      "source": "ORD_5006",
+      "relation": "HAS_RETURN_RECORD",
+      "target": "EV_P6_02"
+    },
+    {
+      "source": "ORD_5006",
+      "relation": "HAS_REFUND_HISTORY",
+      "target": "EV_P6_03"
+    },
+    {
+      "source": "ORD_5006",
+      "relation": "EVALUATED_BY",
+      "target": "EV_P6_04"
+    }
+  ],
+  "derived_values": {
+    "remaining_refundable_amount": 4200,
+    "proposed_refund_amount": 1200
+  },
+  "expected_csp": {
+    "P6_L1": "SATISFIED",
+    "P6_L2": "SATISFIED",
+    "P6_L3": "SATISFIED",
+    "P6_L4": "SATISFIED",
+    "P6_L5": "SATISFIED",
+    "P6_L6": "SATISFIED",
+    "P6_L7": "SATISFIED",
+    "P6_L9": "SATISFIED",
+    "P6_L10": "SATISFIED"
+  },
+  "recommended_action": "authorize_refund_if_permitted",
+  "notes": "Authorization is pending. Do not initiate the refund until the authorization action returns confirmation."
+}
