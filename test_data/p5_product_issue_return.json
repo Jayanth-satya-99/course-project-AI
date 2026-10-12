@@ -1,0 +1,126 @@
+{
+  "case_id": "CASE_P5_001",
+  "policy_id": "P5",
+  "policy_type": "product_issue_return",
+  "scenario": "Customer reports a cracked monitor screen shortly after delivery. The order and delivery are verified, but the submitted photo has not yet been verified.",
+  "customer": {
+    "customer_id": "CUST_1005",
+    "authenticated_customer_id": "CUST_1005",
+    "customer_authorization_status": "verified"
+  },
+  "request": {
+    "intent": "product_issue_return",
+    "order_id": "ORD_5005",
+    "product_id": "MONITOR_M1",
+    "reported_issue_type": "physically_damaged",
+    "issue_discovery_date": "2026-10-10"
+  },
+  "claim_facts": {
+    "order_exists": true,
+    "delivered_product_identity_verified": true,
+    "delivery_status": "delivered",
+    "reported_issue": "Cracked screen observed after unboxing",
+    "reported_issue_type": "physically_damaged",
+    "issue_discovery_date": "2026-10-10",
+    "required_evidence_status": "supplied",
+    "evidence_verification_status": "unverified",
+    "issue_confirmed": false,
+    "remedy_policy_check_status": "completed",
+    "inspection_required": true,
+    "inspection_status": "pending",
+    "issue_assessment_status": "uncertain"
+  },
+  "evidence_nodes": [
+    {
+      "evidence_id": "EV_P5_01",
+      "type": "order_record",
+      "source": "mock_order_system",
+      "attributes": {
+        "order_id": "ORD_5005",
+        "customer_id": "CUST_1005",
+        "product_id": "MONITOR_M1"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P5_02",
+      "type": "delivery_record",
+      "source": "mock_delivery_service",
+      "attributes": {
+        "delivery_status": "delivered",
+        "delivery_date": "2026-10-09",
+        "product_id": "MONITOR_M1"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P5_03",
+      "type": "customer_photo",
+      "source": "customer_upload",
+      "attributes": {
+        "file_name": "screen_damage.jpg",
+        "claimed_issue": "cracked screen"
+      },
+      "verification_status": "unverified"
+    },
+    {
+      "evidence_id": "EV_P5_04",
+      "type": "remedy_policy_record",
+      "source": "mock_policy_registry",
+      "attributes": {
+        "product_category": "monitor",
+        "inspection_required": true,
+        "possible_remedies": [
+          "replacement_if_eligible",
+          "refund_if_eligible"
+        ]
+      },
+      "verification_status": "verified"
+    }
+  ],
+  "edges": [
+    {
+      "source": "CUST_1005",
+      "relation": "PLACED",
+      "target": "ORD_5005"
+    },
+    {
+      "source": "ORD_5005",
+      "relation": "CONTAINS_PRODUCT",
+      "target": "MONITOR_M1"
+    },
+    {
+      "source": "ORD_5005",
+      "relation": "HAS_DELIVERY_EVIDENCE",
+      "target": "EV_P5_02"
+    },
+    {
+      "source": "EV_P5_03",
+      "relation": "ALLEGES_DAMAGE_TO",
+      "target": "MONITOR_M1"
+    },
+    {
+      "source": "MONITOR_M1",
+      "relation": "ASSESSED_UNDER",
+      "target": "EV_P5_04"
+    }
+  ],
+  "derived_values": {
+    "issue_confirmed": false,
+    "remedy_eligible": null
+  },
+  "expected_csp": {
+    "P5_L1": "SATISFIED",
+    "P5_L2": "SATISFIED",
+    "P5_L3": "SATISFIED",
+    "P5_L4": "SATISFIED",
+    "P5_L5": "SATISFIED",
+    "P5_L7": "SATISFIED",
+    "P5_L10": "SATISFIED",
+    "P5_L12": "UNCERTAIN",
+    "P5_L13": "UNCERTAIN",
+    "P5_L14": "SATISFIED"
+  },
+  "recommended_action": "arrange_inspection",
+  "notes": "Unverified evidence is not proof of fraud or proof that damage is absent. The case should remain uncertain until the configured verification step is complete."
+}

@@ -1,0 +1,55 @@
+Policy P1: Standard product refunds
+P1 — Refund Eligibility
+
+- A refund request must be submitted within 30 calendar days of delivery.
+- The order ID and transaction record must be verified.
+- The product must be returned with all required accessories.
+- Products marked non-refundable at purchase are excluded, except where an explicitly defined exception applies.
+- A refund must not exceed the amount actually paid for the eligible items.
+- Missing mandatory evidence results in further verification, not automatic approval or rejection.
+
+Policy P2: Damaged or defective products
+P2 — Damaged Product Claims
+
+- A damaged-product claim must be submitted within 7 calendar days of delivery.
+- The customer must provide the order ID and a description of the damage.
+- Photographs or an authorized inspection can be used as supporting evidence.
+- If the evidence is inconclusive, request further evidence or investigate.
+- If damage is verified and the claim satisfies the applicable rules, a refund or replacement may be offered.
+
+Policy P3: Cancellation
+P3 — Order Cancellation
+
+- An order may be cancelled before dispatch.
+- A cancellation request after dispatch requires the return procedure, if applicable.
+- The order status must be verified before cancellation.
+- A cancellation must not be recorded as successful until the order system confirms it.
+- If the order status cannot be verified, the request remains pending.
+
+Policy P4: Refund limits and managerial approval
+P4 — Approval Hierarchy
+
+- Refunds of up to ₹5,000 can be approved by the service agent if all applicable requirements are satisfied.
+- Refunds above ₹5,000 and up to ₹20,000 require verified managerial approval.
+- Refund requests above ₹20,000 must be escalated to the designated senior authority.
+- Approval must be recorded and linked to the specific claim.
+- Customer pressure, threats, or claimed verbal promises do not substitute for the required authorization.
+
+Policy P5: Duplicate claims
+P5 — Duplicate Requests
+
+- The system must check whether the same transaction and item already have a completed refund.
+- A previously completed refund must not be paid again.
+- If a previous request is still pending, the system should inspect its status before creating another request.
+- Similar requests with conflicting information should be investigated.
+
+Policy P6: Evidence and exceptional cases
+P6 — Evidence Verification
+
+- Customer statements are claims, not automatically verified facts.
+- Internal transaction records and approval logs must be checked against the submitted information.
+- Contradictory records require further investigation.
+- An unavailable record is not proof that an event never happened.
+- Exceptions may be approved only by an authorized role and must be documented.
+- The system must distinguish missing evidence, contradictory evidence, and evidence confirmed to be invalid.
+

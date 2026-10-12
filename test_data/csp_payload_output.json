@@ -1,0 +1,17 @@
+{
+    "intent": "warranty_claim",
+    "order_id": "ORD_5001",
+    "claimed_product_id": "LAPTOP_X1",
+    "reported_defect": "Battery drains unusually fast",
+    "claim_date": "2026-10-10",
+    "order_exists": true,
+    "ordered_product_id": "LAPTOP_X1",
+    "purchase_date": "2026-02-15",
+    "warranty_terms": "Manufacturer limited warranty: 12 months from purchase",
+    "warranty_provider": "Example Manufacturer",
+    "warranty_expiry_date": "2027-02-14",
+    "defect_coverage_status": "covered",
+    "exclusions_checked": true,
+    "required_evidence_status": "verified",
+    "warranty_decision": "covered"
+}

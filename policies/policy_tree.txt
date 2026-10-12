@@ -1,0 +1,186 @@
+
+Customer Request
+|
++-- P1. Warranty Claim
+|   +-- Verify purchase
+|   +-- Verify warranty coverage
+|   +-- Verify reported defect
+|   +-- Check exclusions
+|
++-- P2. Order / Customer-Detail Modification
+|   +-- Verify customer authorization
+|   +-- Check order status
+|   +-- Check whether the field can be changed
+|   +-- Confirm successful update
+|
++-- P3. Order Cancellation
+|   +-- Verify order and customer
+|   +-- Check current order status
+|   +-- Check cancellation availability
+|   +-- Confirm cancellation
+|
++-- P4. Change-of-Mind Return
+|   +-- Check product return eligibility
+|   +-- Check applicable return window
+|   +-- Check item condition
+|   +-- Check return exclusions
+|   +-- Select return method
+|
++-- P5. Damaged / Defective / Incorrect Product
+|   +-- Verify order and delivered item
+|   +-- Classify the reported issue
+|   +-- Check evidence and verification
+|   +-- Check permitted remedy
+|
++-- P6. Refund Processing
+    +-- Verify refund eligibility
+    +-- Verify cancellation / return status
+    +-- Calculate permitted amount
+    +-- Prevent duplicate refund
+    +-- Verify payment and refund status
+
+
+
+P1: WARRANTY_CLAIM
+|
++-- C1: Purchase Verification
+|   +-- L1: Order ID must exist.
+|   +-- L2: Product must match the purchased item.
+|   +-- L3: Purchase date must be available.
+|
++-- C2: Warranty Validation
+|   +-- L4: Applicable warranty terms must be identified.
+|   +-- L5: Warranty provider must be identified.
+|   +-- L6: Claim date must fall within the coverage period.
+|
++-- C3: Defect Assessment
+|   +-- L7: Reported defect must be recorded.
+|   +-- L8: Defect must be covered by the applicable terms.
+|   +-- L9: Applicable exclusions must be checked.
+|   +-- L10: Required inspection/evidence must be verified.
+|
++-- C4: Resolution
+    +-- L11: Covered claim -> permitted warranty remedy.
+    +-- L12: Expired/excluded claim -> no warranty approval.
+    +-- L13: Uncertain coverage -> investigate/escalate.
+
+
+P2: ORDER_MODIFICATION
+|
++-- C1: Authorization
+|   +-- L1: Customer identity/authorization must be verified.
+|   +-- L2: Order must belong to the authorized customer.
+|
++-- C2: Order State
+|   +-- L3: Current order status must be retrieved.
+|   +-- L4: Shipment/dispatch status must be known.
+|
++-- C3: Requested Change
+|   +-- L5: Requested field must be identified.
+|   +-- L6: Requested field must be modifiable at current status.
+|   +-- L7: New value must pass format/validity checks.
+|   +-- L8: Change must not violate delivery/system restrictions.
+|
++-- C4: Execution
+    +-- L9: Only supported changes may be submitted.
+    +-- L10: Update is successful only after system confirmation.
+    +-- L11: If modification is unavailable, explain alternatives.
+
+
+P3: ORDER_CANCELLATION
+|
++-- C1: Order Validation
+|   +-- L1: Order ID must exist.
+|   +-- L2: Customer must be authorized.
+|   +-- L3: Order must not already be cancelled.
+|
++-- C2: Status Evaluation
+|   +-- L4: Current order status must be retrieved.
+|   +-- L5: Cancellation availability must be checked.
+|
++-- C3: Decision
+|   +-- L6: If cancellation is available -> cancellation may proceed.
+|   +-- L7: If shipped -> check available cancellation options.
+|   +-- L8: If unavailable -> explain return/refusal alternatives.
+|
++-- C4: Confirmation
+    +-- L9: Cancellation requires system confirmation.
+    +-- L10: If payment was made, evaluate the applicable refund.
+    +-- L11: Refund must not be marked complete prematurely.
+
+
+P4: CHANGE_OF_MIND_RETURN
+|
++-- C1: Purchase Verification
+|   +-- L1: Order and product must be identified.
+|   +-- L2: Delivery date must be known.
+|
++-- C2: Eligibility
+|   +-- L3: Product category must be identified.
+|   +-- L4: Applicable return window must be retrieved.
+|   +-- L5: Request date must satisfy the applicable window.
+|   +-- L6: Product must be return-eligible.
+|   +-- L7: Category-specific exclusions must be checked.
+|
++-- C3: Condition
+|   +-- L8: Item condition must be recorded.
+|   +-- L9: Required accessories/parts must be checked.
+|   +-- L10: Applicable packaging/tag requirements must be checked.
+|
++-- C4: Return Method
+    +-- L11: Pickup/drop-off options must be available.
+    +-- L12: Return instructions and deadline must be communicated.
+    +-- L13: Eligible return -> initiate permitted return workflow.
+    +-- L14: Ineligible or uncertain -> explain/investigate.
+
+
+P5: PRODUCT_ISSUE
+|
++-- C1: Order and Delivery
+|   +-- L1: Order ID must exist.
+|   +-- L2: Delivered product must match the order record.
+|   +-- L3: Delivery status must be verified.
+|
++-- C2: Issue Classification
+|   +-- L4: Issue must be classified:
+|   |       damaged / defective / incorrect / missing parts /
+|   |       materially different from description
+|   +-- L5: Reported issue and discovery time must be recorded.
+|
++-- C3: Evidence Verification
+|   +-- L6: Required evidence must be requested.
+|   +-- L7: Evidence source and verification status must be recorded.
+|   +-- L8: Contradictory evidence -> investigate.
+|   +-- L9: Missing evidence -> request evidence if required.
+|   +-- L10: Unverified allegation must not be treated as confirmed.
+|
++-- C4: Remedy
+    +-- L11: Applicable return/replacement policy must be checked.
+    +-- L12: Inspection requirements must be satisfied when applicable.
+    +-- L13: Confirmed eligible issue -> offer permitted remedy.
+    +-- L14: Uncertain case -> investigate/escalate.
+
+
+P6: REFUND_PROCESSING
+|
++-- C1: Eligibility
+|   +-- L1: Order and payment records must be retrieved.
+|   +-- L2: Cancellation/return outcome must be verified.
+|   +-- L3: Refund eligibility must be established.
+|
++-- C2: Amount
+|   +-- L4: Amount originally paid must be retrieved.
+|   +-- L5: Previously issued refunds must be checked.
+|   +-- L6: Eligible refund amount must be calculated.
+|   +-- L7: Duplicate refund must be prevented.
+|
++-- C3: Authorization
+|   +-- L8: Refund must satisfy authorization rules.
+|   +-- L9: Required return/inspection checks must be completed.
+|   +-- L10: Applicable refund method must be identified.
+|
++-- C4: Processing
+|   +-- L11: Refund initiation requires system confirmation.
+|   +-- L12: Initiated refund must not be labelled completed.
+|   +-- L13: Payment/refund status must be retrieved.
+|   +-- L14: Failed or uncertain status -> investigate/escalate.

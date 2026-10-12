@@ -1,0 +1,129 @@
+{
+  "case_id": "CASE_P4_001",
+  "policy_id": "P4",
+  "policy_type": "change_of_mind_return",
+  "scenario": "Customer wants to return shoes because the size does not fit. The fictional product policy allows returns within 15 days and the item meets the configured condition requirements.",
+  "customer": {
+    "customer_id": "CUST_1004",
+    "authenticated_customer_id": "CUST_1004",
+    "customer_authorization_status": "verified"
+  },
+  "request": {
+    "intent": "change_of_mind_return",
+    "order_id": "ORD_5004",
+    "product_id": "SHOE_A2",
+    "return_reason": "incorrect_size"
+  },
+  "claim_facts": {
+    "order_id": "ORD_5004",
+    "delivery_date": "2026-10-01",
+    "request_date": "2026-10-11",
+    "date_difference_days": 10,
+    "applicable_return_window_days": 15,
+    "product_category": "footwear",
+    "return_eligible": true,
+    "return_exclusions_checked": true,
+    "item_condition": "unused_with_tags",
+    "required_parts_check_status": "completed",
+    "packaging_tag_check_status": "completed",
+    "available_return_methods_count": 1,
+    "return_instructions_communicated": true,
+    "return_eligibility_status": "eligible"
+  },
+  "evidence_nodes": [
+    {
+      "evidence_id": "EV_P4_01",
+      "type": "order_record",
+      "source": "mock_order_system",
+      "attributes": {
+        "order_id": "ORD_5004",
+        "customer_id": "CUST_1004",
+        "product_id": "SHOE_A2",
+        "delivery_date": "2026-10-01"
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P4_02",
+      "type": "return_policy_record",
+      "source": "mock_policy_registry",
+      "attributes": {
+        "product_category": "footwear",
+        "return_window_days": 15,
+        "eligible": true,
+        "exclusions_checked": true
+      },
+      "verification_status": "verified"
+    },
+    {
+      "evidence_id": "EV_P4_03",
+      "type": "customer_condition_declaration",
+      "source": "customer_message",
+      "attributes": {
+        "item_condition": "unused_with_tags",
+        "return_reason": "incorrect_size"
+      },
+      "verification_status": "unverified"
+    },
+    {
+      "evidence_id": "EV_P4_04",
+      "type": "return_method_lookup",
+      "source": "mock_returns_service",
+      "attributes": {
+        "available_methods": [
+          "pickup"
+        ],
+        "count": 1
+      },
+      "verification_status": "verified"
+    }
+  ],
+  "edges": [
+    {
+      "source": "CUST_1004",
+      "relation": "PLACED",
+      "target": "ORD_5004"
+    },
+    {
+      "source": "ORD_5004",
+      "relation": "CONTAINS_PRODUCT",
+      "target": "SHOE_A2"
+    },
+    {
+      "source": "ORD_5004",
+      "relation": "HAS_DELIVERY_EVIDENCE",
+      "target": "EV_P4_01"
+    },
+    {
+      "source": "SHOE_A2",
+      "relation": "EVALUATED_UNDER",
+      "target": "EV_P4_02"
+    },
+    {
+      "source": "EV_P4_03",
+      "relation": "DESCRIBES_CONDITION_OF",
+      "target": "SHOE_A2"
+    },
+    {
+      "source": "ORD_5004",
+      "relation": "HAS_RETURN_METHODS",
+      "target": "EV_P4_04"
+    }
+  ],
+  "derived_values": {
+    "date_difference_days": 10,
+    "applicable_return_window_days": 15
+  },
+  "expected_csp": {
+    "P4_L1": "SATISFIED",
+    "P4_L2": "SATISFIED",
+    "P4_L3": "SATISFIED",
+    "P4_L4": "SATISFIED",
+    "P4_L5": "SATISFIED",
+    "P4_L6": "SATISFIED",
+    "P4_L7": "SATISFIED",
+    "P4_L8": "SATISFIED"
+  },
+  "recommended_action": "check_return_eligibility",
+  "notes": "The customer's condition statement is unverified; a condition-sensitive decision may need inspection. The 15-day window is fictional test configuration, not a universal Amazon rule."
+}
