@@ -1,0 +1,1015 @@
+{
+  "company_reference": "Unified Policies Graph Simulation",
+  "policy_version": "1.0",
+  "evaluation_statuses": ["SATISFIED", "VIOLATED", "UNCERTAIN"],
+  "policies": [
+    {
+      "policy_id": "P_REFUND",
+      "name": "Refund Initiation and Processing",
+      "type": "refund",
+      "constraints": [
+        {
+          "constraint_id": "REF_C1",
+          "description": "Order and payment records must be available",
+          "type": "all",
+          "conditions": [
+            {
+              "type": "presence",
+              "field": "order_id",
+              "operator": "is_not_null"
+            },
+            {
+              "type": "presence",
+              "field": "payment_record",
+              "operator": "is_not_null"
+            }
+          ]
+        },
+        {
+          "constraint_id": "REF_C2",
+          "description": "Cancellation or return outcome must be verified",
+          "type": "comparison",
+          "left": { "field": "return_cancellation_status" },
+          "operator": "in",
+          "right": {
+            "value": [
+              "confirmed_cancelled",
+              "return_approved",
+              "return_received",
+              "refund_exception_authorized"
+            ]
+          }
+        },
+        {
+          "constraint_id": "REF_C3",
+          "description": "Refund eligibility must be established",
+          "type": "comparison",
+          "left": { "field": "refund_eligibility_status" },
+          "operator": "==",
+          "right": { "value": "eligible" }
+        },
+        {
+          "constraint_id": "REF_C4",
+          "description": "Original amount paid must be available",
+          "type": "presence",
+          "field": "amount_paid",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "REF_C5",
+          "description": "Previously issued refunds must be checked",
+          "type": "comparison",
+          "left": { "field": "previous_refund_check_status" },
+          "operator": "==",
+          "right": { "value": "completed" }
+        },
+        {
+          "constraint_id": "REF_C6",
+          "description": "Eligible refund amount must not exceed the remaining refundable amount",
+          "type": "comparison",
+          "left": { "field": "proposed_refund_amount" },
+          "operator": "<=",
+          "right": { "field": "remaining_refundable_amount" }
+        },
+        {
+          "constraint_id": "REF_C7",
+          "description": "Refund amount must not be negative",
+          "type": "comparison",
+          "left": { "field": "proposed_refund_amount" },
+          "operator": ">=",
+          "right": { "value": 0 }
+        },
+        {
+          "constraint_id": "REF_C8",
+          "description": "Refund must be authorized",
+          "type": "comparison",
+          "left": { "field": "refund_authorization_status" },
+          "operator": "==",
+          "right": { "value": "authorized" }
+        },
+        {
+          "constraint_id": "REF_C9",
+          "description": "Required return and inspection checks must be complete",
+          "type": "comparison",
+          "left": { "field": "refund_prerequisites_status" },
+          "operator": "==",
+          "right": { "value": "satisfied" }
+        },
+        {
+          "constraint_id": "REF_C10",
+          "description": "Refund method must be permitted",
+          "type": "comparison",
+          "left": { "field": "refund_method_allowed" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "REF_C11",
+          "description": "Refund initiation requires system confirmation",
+          "type": "comparison",
+          "left": { "field": "refund_initiation_system_status" },
+          "operator": "==",
+          "right": { "value": "confirmed" }
+        },
+        {
+          "constraint_id": "REF_C12",
+          "description": "Completed status requires completion confirmation",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "refund_status" },
+            "operator": "==",
+            "right": { "value": "completed" }
+          },
+          "then": {
+            "left": { "field": "refund_completion_confirmed" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        },
+        {
+          "constraint_id": "REF_C13",
+          "description": "Refund status must be retrieved from the payment or order system",
+          "type": "comparison",
+          "left": { "field": "refund_status_verification" },
+          "operator": "==",
+          "right": { "value": "verified" }
+        },
+        {
+          "constraint_id": "REF_C14",
+          "description": "Failed or uncertain refund must be investigated or escalated",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "refund_status" },
+            "operator": "in",
+            "right": {
+              "value": ["failed", "uncertain"]
+            }
+          },
+          "then": {
+            "type": "any",
+            "conditions": [
+              {
+                "type": "comparison",
+                "left": { "field": "investigation_status" },
+                "operator": "==",
+                "right": { "value": "completed" }
+              },
+              {
+                "type": "comparison",
+                "left": { "field": "escalation_status" },
+                "operator": "==",
+                "right": { "value": "completed" }
+              }
+            ]
+          }
+        }
+      ],
+      "possible_actions": [
+        "check_refund_eligibility",
+        "calculate_eligible_amount",
+        "authorize_refund_if_permitted",
+        "initiate_refund",
+        "check_refund_status",
+        "investigate_failed_refund",
+        "escalate"
+      ]
+    },
+    {
+      "policy_id": "P_PAYMENT",
+      "name": "Payment Processing",
+      "type": "payment",
+      "constraints": [
+        {
+          "constraint_id": "PAY_C1",
+          "description": "Order total must be greater than zero",
+          "type": "comparison",
+          "left": { "field": "order_total" },
+          "operator": ">",
+          "right": { "value": 0 }
+        },
+        {
+          "constraint_id": "PAY_C2",
+          "description": "Payment method must be supported",
+          "type": "comparison",
+          "left": { "field": "payment_method" },
+          "operator": "in",
+          "right": {
+            "value": ["credit_card", "debit_card", "paypal", "store_credit"]
+          }
+        },
+        {
+          "constraint_id": "PAY_C3",
+          "description": "Fraud risk score must be acceptable",
+          "type": "comparison",
+          "left": { "field": "fraud_risk_score" },
+          "operator": "<",
+          "right": { "value": 85 }
+        },
+        {
+          "constraint_id": "PAY_C4",
+          "description": "Payment gateway must authorize the transaction",
+          "type": "comparison",
+          "left": { "field": "gateway_authorization_status" },
+          "operator": "==",
+          "right": { "value": "authorized" }
+        },
+        {
+          "constraint_id": "PAY_C5",
+          "description": "Captured amount must match the order total",
+          "type": "comparison",
+          "left": { "field": "captured_amount" },
+          "operator": "==",
+          "right": { "field": "order_total" }
+        }
+      ],
+      "possible_actions": [
+        "initiate_authorization",
+        "capture_payment",
+        "flag_for_fraud_review",
+        "decline_payment"
+      ]
+    },
+    {
+      "policy_id": "P_RETURN",
+      "name": "Change-of-Mind and Unwanted Product Returns",
+      "type": "return",
+      "constraints": [
+        {
+          "constraint_id": "RET_C1",
+          "description": "Order and product must be identified",
+          "type": "presence",
+          "field": "order_id",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "RET_C2",
+          "description": "Delivery date must be available",
+          "type": "presence",
+          "field": "delivery_date",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "RET_C3",
+          "description": "Product category must be identified",
+          "type": "presence",
+          "field": "product_category",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "RET_C4",
+          "description": "Applicable return window must be available",
+          "type": "presence",
+          "field": "applicable_return_window_days",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "RET_C5",
+          "description": "Return request must be within the applicable return window",
+          "type": "comparison",
+          "left": { "field": "date_difference_days" },
+          "operator": "<=",
+          "right": { "field": "applicable_return_window_days" }
+        },
+        {
+          "constraint_id": "RET_C6",
+          "description": "Product must be return-eligible",
+          "type": "comparison",
+          "left": { "field": "return_eligible" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "RET_C7",
+          "description": "Applicable return exclusions must be checked",
+          "type": "comparison",
+          "left": { "field": "return_exclusions_checked" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "RET_C8",
+          "description": "Item condition must be recorded",
+          "type": "presence",
+          "field": "item_condition",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "RET_C9",
+          "description": "Required accessories and parts must be checked",
+          "type": "comparison",
+          "left": { "field": "required_parts_check_status" },
+          "operator": "==",
+          "right": { "value": "completed" }
+        },
+        {
+          "constraint_id": "RET_C10",
+          "description": "Applicable packaging and tag requirements must be checked",
+          "type": "comparison",
+          "left": { "field": "packaging_tag_check_status" },
+          "operator": "==",
+          "right": { "value": "completed" }
+        },
+        {
+          "constraint_id": "RET_C11",
+          "description": "At least one permitted return method must be available",
+          "type": "comparison",
+          "left": { "field": "available_return_methods_count" },
+          "operator": ">",
+          "right": { "value": 0 }
+        },
+        {
+          "constraint_id": "RET_C12",
+          "description": "Return instructions and deadline must be communicated",
+          "type": "comparison",
+          "left": { "field": "return_instructions_communicated" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "RET_C13",
+          "description": "Return can be initiated only for an eligible product",
+          "type": "comparison",
+          "left": { "field": "return_eligible" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "RET_C14",
+          "description": "Uncertain return eligibility requires investigation or escalation",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "return_eligibility_status" },
+            "operator": "==",
+            "right": { "value": "uncertain" }
+          },
+          "then": {
+            "type": "any",
+            "conditions": [
+              {
+                "type": "comparison",
+                "left": { "field": "investigation_status" },
+                "operator": "==",
+                "right": { "value": "completed" }
+              },
+              {
+                "type": "comparison",
+                "left": { "field": "escalation_status" },
+                "operator": "==",
+                "right": { "value": "completed" }
+              }
+            ]
+          }
+        }
+      ],
+      "possible_actions": [
+        "check_return_eligibility",
+        "initiate_return",
+        "schedule_pickup",
+        "provide_drop_off_option",
+        "explain_return_exclusion",
+        "escalate"
+      ]
+    },
+    {
+      "policy_id": "P_EXCHANGE",
+      "name": "Exchange Requests",
+      "type": "exchange",
+      "constraints": [
+        {
+          "constraint_id": "EXC_C1",
+          "description": "Original item must have been delivered",
+          "type": "comparison",
+          "left": { "field": "delivery_status" },
+          "operator": "==",
+          "right": { "value": "delivered" }
+        },
+        {
+          "constraint_id": "EXC_C2",
+          "description": "Request must be within the exchange window",
+          "type": "comparison",
+          "left": { "field": "days_since_delivery" },
+          "operator": "<=",
+          "right": { "field": "exchange_window_days" }
+        },
+        {
+          "constraint_id": "EXC_C3",
+          "description": "Target exchange item must be in stock",
+          "type": "comparison",
+          "left": { "field": "target_item_stock_status" },
+          "operator": "==",
+          "right": { "value": "in_stock" }
+        },
+        {
+          "constraint_id": "EXC_C4",
+          "description": "Price difference must be resolved (paid or refunded)",
+          "type": "comparison",
+          "left": { "field": "price_difference_resolved" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "EXC_C5",
+          "description": "Returned item must pass condition inspection",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "returned_item_received" },
+            "operator": "==",
+            "right": { "value": true }
+          },
+          "then": {
+            "left": { "field": "item_condition" },
+            "operator": "in",
+            "right": { "value": ["new", "unused", "good"] }
+          }
+        },
+        {
+          "constraint_id": "EXC_C6",
+          "description": "Exchange limit per order must not be exceeded",
+          "type": "comparison",
+          "left": { "field": "previous_exchanges_count" },
+          "operator": "<",
+          "right": { "value": 2 }
+        }
+      ],
+      "possible_actions": [
+        "check_inventory",
+        "process_price_adjustment",
+        "generate_return_label",
+        "dispatch_replacement"
+      ]
+    },
+    {
+      "policy_id": "P_DELIVERY",
+      "name": "Delivery Requests",
+      "type": "delivery",
+      "constraints": [
+        {
+          "constraint_id": "DEL_C1",
+          "description": "Destination address must be valid and complete",
+          "type": "comparison",
+          "left": { "field": "address_validation_status" },
+          "operator": "==",
+          "right": { "value": "valid" }
+        },
+        {
+          "constraint_id": "DEL_C2",
+          "description": "Delivery zone must be within serviceable area",
+          "type": "comparison",
+          "left": { "field": "is_serviceable_zipcode" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "DEL_C3",
+          "description": "Scheduled delivery time must be assigned",
+          "type": "presence",
+          "field": "scheduled_delivery_window",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "DEL_C4",
+          "description": "High-value items require proof of delivery signature",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "order_value" },
+            "operator": ">",
+            "right": { "field": "signature_required_threshold" }
+          },
+          "then": {
+            "left": { "field": "signature_captured" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        },
+        {
+          "constraint_id": "DEL_C5",
+          "description": "Failed delivery attempts must not exceed maximum limit",
+          "type": "comparison",
+          "left": { "field": "delivery_attempts" },
+          "operator": "<=",
+          "right": { "field": "max_delivery_attempts" }
+        }
+      ],
+      "possible_actions": [
+        "schedule_delivery",
+        "require_signature",
+        "mark_delivered",
+        "return_to_sender"
+      ]
+    },
+    {
+      "policy_id": "P_SHIPMENT",
+      "name": "Shipment Requests",
+      "type": "shipment",
+      "constraints": [
+        {
+          "constraint_id": "SHP_C1",
+          "description": "Order status must be packed and ready",
+          "type": "comparison",
+          "left": { "field": "fulfillment_status" },
+          "operator": "==",
+          "right": { "value": "packed" }
+        },
+        {
+          "constraint_id": "SHP_C2",
+          "description": "Package weight and dimensions must be recorded",
+          "type": "all",
+          "conditions": [
+            {
+              "type": "presence",
+              "field": "package_weight",
+              "operator": "is_not_null"
+            },
+            {
+              "type": "presence",
+              "field": "package_dimensions",
+              "operator": "is_not_null"
+            }
+          ]
+        },
+        {
+          "constraint_id": "SHP_C3",
+          "description": "Carrier must be assigned based on service level",
+          "type": "presence",
+          "field": "assigned_carrier",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "SHP_C4",
+          "description": "Tracking number must be generated",
+          "type": "presence",
+          "field": "tracking_number",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "SHP_C5",
+          "description": "Hazardous materials must pass compliance checks",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "contains_hazmat" },
+            "operator": "==",
+            "right": { "value": true }
+          },
+          "then": {
+            "left": { "field": "hazmat_compliance_verified" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        }
+      ],
+      "possible_actions": [
+        "assign_carrier",
+        "generate_label",
+        "dispatch_shipment",
+        "hold_for_compliance"
+      ]
+    },
+    {
+      "policy_id": "P_WARRANTY",
+      "name": "Warranty Claim",
+      "type": "warranty",
+      "constraints": [
+        {
+          "constraint_id": "WAR_C1",
+          "description": "Order must exist",
+          "type": "comparison",
+          "left": { "field": "order_exists" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "WAR_C2",
+          "description": "Product must match purchased item",
+          "type": "comparison",
+          "left": { "field": "claimed_product_id" },
+          "operator": "==",
+          "right": { "field": "ordered_product_id" }
+        },
+        {
+          "constraint_id": "WAR_C3",
+          "description": "Purchase date must be available",
+          "type": "presence",
+          "field": "purchase_date",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "WAR_C4",
+          "description": "Applicable warranty terms must be identified",
+          "type": "presence",
+          "field": "warranty_terms",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "WAR_C5",
+          "description": "Warranty provider must be identified",
+          "type": "presence",
+          "field": "warranty_provider",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "WAR_C6",
+          "description": "Claim must be within warranty period",
+          "type": "comparison",
+          "left": { "field": "claim_date" },
+          "operator": "<=",
+          "right": { "field": "warranty_expiry_date" }
+        },
+        {
+          "constraint_id": "WAR_C7",
+          "description": "Reported defect must be recorded",
+          "type": "presence",
+          "field": "reported_defect",
+          "operator": "is_not_empty"
+        },
+        {
+          "constraint_id": "WAR_C8",
+          "description": "Reported defect must be covered",
+          "type": "comparison",
+          "left": { "field": "defect_coverage_status" },
+          "operator": "==",
+          "right": { "value": "covered" }
+        },
+        {
+          "constraint_id": "WAR_C9",
+          "description": "Warranty exclusions must be checked",
+          "type": "comparison",
+          "left": { "field": "exclusions_checked" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "WAR_C10",
+          "description": "Required evidence must be verified",
+          "type": "comparison",
+          "left": { "field": "required_evidence_status" },
+          "operator": "==",
+          "right": { "value": "verified" }
+        },
+        {
+          "constraint_id": "WAR_C11",
+          "description": "Covered claim can receive a permitted remedy",
+          "type": "comparison",
+          "left": { "field": "warranty_decision" },
+          "operator": "==",
+          "right": { "value": "covered" }
+        },
+        {
+          "constraint_id": "WAR_C12",
+          "description": "Expired or excluded claim cannot be approved under warranty",
+          "type": "comparison",
+          "left": { "field": "warranty_decision" },
+          "operator": "in",
+          "right": { "value": ["expired", "excluded"] }
+        },
+        {
+          "constraint_id": "WAR_C13",
+          "description": "Uncertain coverage requires investigation or escalation",
+          "type": "comparison",
+          "left": { "field": "warranty_decision" },
+          "operator": "==",
+          "right": { "value": "uncertain" }
+        }
+      ],
+      "possible_actions": [
+        "verify_warranty",
+        "request_evidence",
+        "arrange_inspection",
+        "refer_to_manufacturer",
+        "approve_covered_remedy",
+        "reject",
+        "escalate"
+      ]
+    },
+    {
+      "policy_id": "P_INSURANCE",
+      "name": "Insurance Claims",
+      "type": "insurance",
+      "constraints": [
+        {
+          "constraint_id": "INS_C1",
+          "description": "Insurance premium payments must be fully up to date",
+          "type": "comparison",
+          "left": { "field": "premium_status" },
+          "operator": "==",
+          "right": { "value": "paid" }
+        },
+        {
+          "constraint_id": "INS_C2",
+          "description": "Incident date must fall within the active coverage period",
+          "type": "all",
+          "conditions": [
+            {
+              "type": "comparison",
+              "left": { "field": "incident_date" },
+              "operator": ">=",
+              "right": { "field": "policy_start_date" }
+            },
+            {
+              "type": "comparison",
+              "left": { "field": "incident_date" },
+              "operator": "<=",
+              "right": { "field": "policy_end_date" }
+            }
+          ]
+        },
+        {
+          "constraint_id": "INS_C3",
+          "description": "Incident type must be covered under the specific policy",
+          "type": "comparison",
+          "left": { "field": "incident_type" },
+          "operator": "in",
+          "right": { "field": "covered_perils_list" }
+        },
+        {
+          "constraint_id": "INS_C4",
+          "description": "Theft or loss claims require an official police report",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "incident_type" },
+            "operator": "in",
+            "right": { "value": ["theft", "loss"] }
+          },
+          "then": {
+            "left": { "field": "police_report_verified" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        },
+        {
+          "constraint_id": "INS_C5",
+          "description": "Damage claims require an official adjuster assessment",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "incident_type" },
+            "operator": "==",
+            "right": { "value": "damage" }
+          },
+          "then": {
+            "left": { "field": "adjuster_report_status" },
+            "operator": "==",
+            "right": { "value": "completed" }
+          }
+        },
+        {
+          "constraint_id": "INS_C6",
+          "description": "Claim amount must exceed the policy deductible",
+          "type": "comparison",
+          "left": { "field": "assessed_claim_value" },
+          "operator": ">",
+          "right": { "field": "policy_deductible" }
+        },
+        {
+          "constraint_id": "INS_C7",
+          "description": "Total payout cannot exceed the policy limit",
+          "type": "comparison",
+          "left": { "field": "proposed_payout" },
+          "operator": "<=",
+          "right": { "field": "policy_maximum_limit" }
+        }
+      ],
+      "possible_actions": [
+        "verify_coverage",
+        "request_police_report",
+        "dispatch_adjuster",
+        "approve_payout",
+        "deny_insurance_claim"
+      ]
+    },
+    {
+      "policy_id": "P_ORDER_MODIFICATION",
+      "name": "Order and Customer-Detail Modification",
+      "type": "order_modification",
+      "constraints": [
+        {
+          "constraint_id": "MOD_C1",
+          "description": "Customer authorization must be verified",
+          "type": "comparison",
+          "left": { "field": "customer_authorization_status" },
+          "operator": "==",
+          "right": { "value": "verified" }
+        },
+        {
+          "constraint_id": "MOD_C2",
+          "description": "Order must belong to the authorized customer",
+          "type": "comparison",
+          "left": { "field": "order_customer_id" },
+          "operator": "==",
+          "right": { "field": "authenticated_customer_id" }
+        },
+        {
+          "constraint_id": "MOD_C3",
+          "description": "Current order status must be available",
+          "type": "presence",
+          "field": "order_status",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "MOD_C4",
+          "description": "Shipment status must be available",
+          "type": "presence",
+          "field": "shipment_status",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "MOD_C5",
+          "description": "Requested field must be identified",
+          "type": "presence",
+          "field": "requested_field",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "MOD_C6",
+          "description": "Requested field must be modifiable in current order state",
+          "type": "comparison",
+          "left": { "field": "field_modification_allowed" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "MOD_C7",
+          "description": "New value must pass validation",
+          "type": "comparison",
+          "left": { "field": "new_value_valid" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "MOD_C8",
+          "description": "Change must satisfy delivery and system restrictions",
+          "type": "comparison",
+          "left": { "field": "modification_restrictions_satisfied" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "MOD_C9",
+          "description": "Requested field must be supported",
+          "type": "comparison",
+          "left": { "field": "requested_field" },
+          "operator": "in",
+          "right": {
+            "value": [
+              "delivery_address",
+              "delivery_contact_number",
+              "delivery_instructions"
+            ]
+          }
+        },
+        {
+          "constraint_id": "MOD_C10",
+          "description": "Successful update requires system confirmation",
+          "type": "comparison",
+          "left": { "field": "update_system_status" },
+          "operator": "==",
+          "right": { "value": "confirmed" }
+        },
+        {
+          "constraint_id": "MOD_C11",
+          "description": "Unavailable modification must not be executed",
+          "type": "comparison",
+          "left": { "field": "field_modification_allowed" },
+          "operator": "==",
+          "right": { "value": false }
+        }
+      ],
+      "possible_actions": [
+        "verify_customer",
+        "check_order_status",
+        "update_permitted_field",
+        "explain_unavailable_change",
+        "request_cancellation",
+        "escalate"
+      ]
+    },
+    {
+      "policy_id": "P_CANCELLATION",
+      "name": "Order Cancellation",
+      "type": "cancellation",
+      "constraints": [
+        {
+          "constraint_id": "CAN_C1",
+          "description": "Order must exist",
+          "type": "comparison",
+          "left": { "field": "order_exists" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "CAN_C2",
+          "description": "Customer must be authorized",
+          "type": "comparison",
+          "left": { "field": "customer_authorization_status" },
+          "operator": "==",
+          "right": { "value": "verified" }
+        },
+        {
+          "constraint_id": "CAN_C3",
+          "description": "Order must not already be cancelled",
+          "type": "comparison",
+          "left": { "field": "order_status" },
+          "operator": "!=",
+          "right": { "value": "cancelled" }
+        },
+        {
+          "constraint_id": "CAN_C4",
+          "description": "Current order status must be known",
+          "type": "presence",
+          "field": "order_status",
+          "operator": "is_not_null"
+        },
+        {
+          "constraint_id": "CAN_C5",
+          "description": "Cancellation availability must be checked",
+          "type": "comparison",
+          "left": { "field": "cancellation_check_status" },
+          "operator": "==",
+          "right": { "value": "completed" }
+        },
+        {
+          "constraint_id": "CAN_C6",
+          "description": "Cancellation may proceed when available",
+          "type": "comparison",
+          "left": { "field": "cancellation_allowed" },
+          "operator": "==",
+          "right": { "value": true }
+        },
+        {
+          "constraint_id": "CAN_C7",
+          "description": "Shipped orders require an available cancellation option",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "shipment_status" },
+            "operator": "==",
+            "right": { "value": "shipped" }
+          },
+          "then": {
+            "left": { "field": "shipped_order_cancellation_option_available" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        },
+        {
+          "constraint_id": "CAN_C8",
+          "description": "Unavailable cancellation requires an alternative to be checked",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "cancellation_allowed" },
+            "operator": "==",
+            "right": { "value": false }
+          },
+          "then": {
+            "left": { "field": "alternative_options_checked" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        },
+        {
+          "constraint_id": "CAN_C9",
+          "description": "Cancellation requires system confirmation",
+          "type": "comparison",
+          "left": { "field": "cancellation_system_status" },
+          "operator": "==",
+          "right": { "value": "confirmed" }
+        },
+        {
+          "constraint_id": "CAN_C10",
+          "description": "Paid order requires applicable refund eligibility to be checked",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "payment_status" },
+            "operator": "==",
+            "right": { "value": "paid" }
+          },
+          "then": {
+            "left": { "field": "refund_eligibility_check_status" },
+            "operator": "==",
+            "right": { "value": "completed" }
+          }
+        },
+        {
+          "constraint_id": "CAN_C11",
+          "description": "Refund must not be marked complete without confirmation",
+          "type": "conditional",
+          "if": {
+            "left": { "field": "refund_status" },
+            "operator": "==",
+            "right": { "value": "completed" }
+          },
+          "then": {
+            "left": { "field": "refund_completion_confirmed" },
+            "operator": "==",
+            "right": { "value": true }
+          }
+        }
+      ],
+      "possible_actions": [
+        "check_order",
+        "cancel_order",
+        "explain_cancellation_unavailable",
+        "check_return_options",
+        "check_refund_status",
+        "escalate"
+      ]
+    }
+  ]
+}
