@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy-Adherent Agent — 5-Module Conversational Defense System</title>
+  <meta name="description" content="AI pipeline that enforces organizational policy constraints while resisting adversarial and manipulative user behavior using CSP, Bayesian inference, RL, Sequential Planning, and GenAI.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- App Header -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">🛡️</div>
+      <div class="brand-text">
+        <h1>Policy-Adherent Agent</h1>
+        <p>Modular AI Architecture • Pattern 2 RL-Centric Orchestrator</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="pill-badge active">
+        <span class="pulsing-dot"></span>
+        <span>5 Modules Operational</span>
+      </div>
+      <div class="pill-badge">
+        <span>Minimax α-β Defense Active</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="nav-tabs" role="tablist">
+    <button class="tab-btn active" id="tab-btn-chat" onclick="switchMainTab('chat')">
+      <span>💬</span> Live Conversational Defense
+    </button>
+    <button class="tab-btn" id="tab-btn-sandbox" onclick="switchMainTab('sandbox')">
+      <span>🤖</span> Multi-Agent Sandbox
+    </button>
+    <button class="tab-btn" id="tab-btn-benchmark" onclick="switchMainTab('benchmark')">
+      <span>📊</span> Benchmark & Evaluation
+    </button>
+    <button class="tab-btn" id="tab-btn-policies" onclick="switchMainTab('policies')">
+      <span>📜</span> Policy Knowledge Base
+    </button>
+  </nav>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+
+    <!-- ======================================================================
+         TAB 1: LIVE CONVERSATIONAL DEFENSE & REAL-TIME INSPECTOR
+         ====================================================================== -->
+    <section id="pane-chat" class="tab-pane active">
+      <div class="workspace-grid">
+        
+        <!-- Left: Chat Stream & Input -->
+        <div class="glass-card chat-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-icon">💬</span>
+              <span>Customer Conversation Terminal</span>
+            </div>
+            <button class="btn-secondary" onclick="resetChatSession()" style="padding: 4px 10px; font-size: 0.75rem; border-radius: 6px;">
+              🔄 Reset Session
+            </button>
+          </div>
+
+          <!-- Quick Scenario Presets -->
+          <div class="quick-prompts-bar">
+            <span class="quick-prompts-label">Quick Scenarios:</span>
+            <button class="prompt-chip danger" onclick="loadPrompt('legal_threat')">
+              ⚠️ Legal & Chargeback Threat
+            </button>
+            <button class="prompt-chip" onclick="loadPrompt('emotional_appeal')">
+              🥺 Emotional Appeal
+            </button>
+            <button class="prompt-chip danger" onclick="loadPrompt('gaslighting')">
+              🤥 Supervisor Gaslighting
+            </button>
+            <button class="prompt-chip" onclick="loadPrompt('legit_refund')">
+              ✅ Genuine Refund (ORD-001)
+            </button>
+            <button class="prompt-chip" onclick="loadPrompt('cancel_order')">
+              📦 Order Cancellation
+            </button>
+          </div>
+
+          <!-- Chat Stream -->
+          <div class="chat-stream" id="chat-stream">
+            <div class="message-wrapper agent">
+              <div class="message-avatar">🛡️</div>
+              <div class="message-bubble">
+Hello! I am your Policy-Adherent Customer Support Specialist.
+How can I assist you with your order, return, or policy inquiry today?
+              </div>
+            </div>
+          </div>
+
+          <!-- Input Bar -->
+          <form class="chat-input-bar" id="chat-form" onsubmit="handleChatSubmit(event)">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Type a customer message or manipulative prompt..." autocomplete="off">
+            <button type="submit" class="send-btn" id="send-btn">
+              <span>Send</span>
+              <span>➔</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Right: Real-Time Module Inspector -->
+        <div class="glass-card inspector-card">
+          <div class="card-header">
+            <div class="card-title">
+              <span class="card-title-icon">🔬</span>
+              <span>Real-Time Module Telemetry</span>
+            </div>
+            <span class="pill-badge" id="telemetry-turn-badge" style="font-size: 0.72rem;">Turn 0</span>
+          </div>
+
+          <!-- Inspector Tabs -->
+          <div class="inspector-tabs">
+            <button class="ins-tab-btn active" onclick="switchInspectorTab('csp')">M1: CSP & Minimax</button>
+            <button class="ins-tab-btn" onclick="switchInspectorTab('planner')">M2: Plan & Safety</button>
+            <button class="ins-tab-btn" onclick="switchInspectorTab('bayes')">M3: Bayesian Risk</button>
+            <button class="ins-tab-btn" onclick="switchInspectorTab('rl')">M4: RL Strategist</button>
+            <button class="ins-tab-btn" onclick="switchInspectorTab('genai')">M5: Grounded Voice</button>
+          </div>
+
+          <!-- Inspector Body -->
+          <div class="inspector-body" id="inspector-body">
+
+            <!-- Panel M1: CSP & Minimax -->
+            <div id="ins-pane-csp" class="ins-panel active">
+              <div class="telemetry-card">
+                <h4>
+                  <span>CSP Constraint Evaluation</span>
+                  <span id="csp-summary-tag" class="tag-status SATISFIED">WAITING</span>
+                </h4>
+                <p id="csp-explanation-text" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                  Send a message to run constraint satisfaction against the policy graph.
+                </p>
+                <div class="constraint-list" id="csp-constraints-list">
+                  <div class="constraint-item">
+                    <span>POL-REFUND-001:purchase_within_window</span>
+                    <span class="tag-status UNCERTAIN">PENDING</span>
+                  </div>
+                  <div class="constraint-item">
+                    <span>POL-REFUND-001:receipt_provided</span>
+                    <span class="tag-status UNCERTAIN">PENDING</span>
+                  </div>
+                  <div class="constraint-item">
+                    <span>POL-REFUND-001:photo_evidence_provided</span>
+                    <span class="tag-status UNCERTAIN">PENDING</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="telemetry-card">
+                <h4><span>Policy Evidence Graph</span></h4>
+                <p id="evidence-graph-summary" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                  Send a request to match NLU evidence to the requirements in policies.json.
+                </p>
+                <div class="constraint-list" id="evidence-graph-list"></div>
+              </div>
+
+              <div class="telemetry-card">
+                <h4>
+                  <span>Minimax Tactical Defense (α-β Pruning)</span>
+                  <span id="minimax-tone-tag" class="tag-status SATISFIED">FIRM_POLITE</span>
+                </h4>
+                <div class="gauge-container">
+                  <div class="gauge-row">
+                    <div class="gauge-label">
+                      <span>Policy Compliance Score</span>
+                      <span id="minimax-score-val">0.95</span>
+                    </div>
+                    <div class="gauge-bar-track">
+                      <div id="minimax-score-fill" class="gauge-bar-fill success" style="width: 95%;"></div>
+                    </div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; font-size: 0.78rem;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 6px;">
+                      <span style="color: var(--text-dim);">Evaluated Nodes:</span>
+                      <strong id="minimax-nodes" style="color: var(--text-main); margin-left: 6px;">0</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 6px;">
+                      <span style="color: var(--text-dim);">Pruned Branches:</span>
+                      <strong id="minimax-pruned" style="color: var(--cyan); margin-left: 6px;">0</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel M2: Planner & Safety Gate -->
+            <div id="ins-pane-planner" class="ins-panel">
+              <div class="telemetry-card">
+                <h4><span>Simulated Reviewer Verification</span></h4>
+                <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 10px;">
+                  Demo control: record a completed verification, then re-run the policy checks.
+                </p>
+                <div style="display: flex; gap: 8px;">
+                  <select id="verification-step" class="chat-input" aria-label="Verification step">
+                    <option value="order_lookup">Verify order record</option>
+                    <option value="evidence_check">Validate submitted evidence</option>
+                    <option value="history_check">Check claim history</option>
+                    <option value="manager_approval">Record manager approval</option>
+                  </select>
+                  <button class="btn-secondary" type="button" onclick="completeVerification()">
+                    Record
+                  </button>
+                </div>
+              </div>
+              <div class="telemetry-card">
+                <h4>
+                  <span>Irreversible Action Safety Gate</span>
+                  <span id="safety-gate-badge" class="tag-status SATISFIED">GATE CLEAR</span>
+                </h4>
+                <div id="safety-gate-message" style="font-size: 0.8rem; color: var(--text-muted); padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                  Preconditions satisfied or current action is non-irreversible.
+                </div>
+              </div>
+
+              <div class="telemetry-card">
+                <h4><span>PDDL Sequential Claim Resolution Plan</span></h4>
+                <div class="plan-stepper" id="plan-stepper">
+                  <div class="step-node current">
+                    <div class="step-icon"></div>
+                    <div class="step-content">
+                      <div class="step-title">1. request_receipt</div>
+                      <div class="step-desc">Prompt customer to submit purchase receipt or invoice</div>
+                    </div>
+                  </div>
+                  <div class="step-node">
+                    <div class="step-icon"></div>
+                    <div class="step-content">
+                      <div class="step-title">2. validate_submitted_evidence</div>
+                      <div class="step-desc">Cross-check submitted documents for authenticity</div>
+                    </div>
+                  </div>
+                  <div class="step-node">
+                    <div class="step-icon"></div>
+                    <div class="step-content">
+                      <div class="step-title">3. issue_refund</div>
+                      <div class="step-desc">[IRREVERSIBLE] Execute payment disbursement</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel M3: Bayesian Risk Assessment -->
+            <div id="ins-pane-bayes" class="ins-panel">
+              <div class="telemetry-card">
+                <h4>
+                  <span>Bayesian Risk Probabilities</span>
+                  <span id="evidence-strength-tag" class="tag-status UNCERTAIN">MODERATE</span>
+                </h4>
+                <div class="gauge-container">
+                  <div class="gauge-row">
+                    <div class="gauge-label">
+                      <span>P(Fraud | Evidence)</span>
+                      <strong id="fraud-prob-text" style="color: var(--rose);">0.0%</strong>
+                    </div>
+                    <div class="gauge-bar-track">
+                      <div id="fraud-prob-fill" class="gauge-bar-fill danger" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                  <div class="gauge-row">
+                    <div class="gauge-label">
+                      <span>Evidence Reliability Score</span>
+                      <strong id="evidence-rel-text" style="color: var(--cyan);">100%</strong>
+                    </div>
+                    <div class="gauge-bar-track">
+                      <div id="evidence-rel-fill" class="gauge-bar-fill info" style="width: 100%;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="telemetry-card">
+                <h4><span>Identified Risk Factors</span></h4>
+                <ul id="risk-factors-list" style="font-size: 0.8rem; color: var(--text-muted); padding-left: 20px; line-height: 1.6;">
+                  <li>No active risk flags detected yet.</li>
+                </ul>
+                <div style="margin-top: 12px; font-size: 0.78rem; background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 6px;">
+                  <span style="color: var(--text-dim);">Recommendation:</span>
+                  <span id="risk-recommendation-text" style="color: var(--text-main); font-weight: 500;">Proceed with standard verification.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel M4: RL Strategist -->
+            <div id="ins-pane-rl" class="ins-panel">
+              <div class="telemetry-card">
+                <h4>
+                  <span>Selected Action</span>
+                  <span id="rl-action-badge" class="tag-status SATISFIED">ASK_FOR_EVIDENCE</span>
+                </h4>
+                <div style="font-size: 0.75rem; color: var(--text-dim); margin-bottom: 12px;">
+                  Discretized State: <code id="rl-state-key" style="color: var(--cyan);">A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0</code>
+                </div>
+                <div class="q-value-grid" id="q-value-grid">
+                  <!-- Generated dynamically via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Panel M5: Grounded Voice -->
+            <div id="ins-pane-genai" class="ins-panel">
+              <div class="telemetry-card">
+                <h4><span>Cited Policy Clauses</span></h4>
+                <div id="cited-policies-tags" style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px;">
+                  <span class="tag-status SATISFIED">POL-REFUND-001</span>
+                </div>
+              </div>
+              <div class="telemetry-card">
+                <h4><span>Evidence Status Breakdown</span></h4>
+                <div id="evidence-status-breakdown" style="font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;">
+                  Awaiting claim evaluation...
+                </div>
+              </div>
+              <div class="telemetry-card">
+                <h4><span>Available Customer Next Actions</span></h4>
+                <ul id="customer-next-actions-list" style="font-size: 0.8rem; color: var(--text-main); padding-left: 20px; line-height: 1.6;">
+                  <li>Provide order details or proof of purchase.</li>
+                </ul>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 2: MULTI-AGENT SIMULATION SANDBOX
+         ====================================================================== -->
+    <section id="pane-sandbox" class="tab-pane">
+      <div class="glass-card" style="padding: 24px;">
+        <div class="card-header" style="background: none; padding: 0 0 16px 0; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;">
+          <div class="card-title">
+            <span class="card-title-icon">🤖</span>
+            <span>Multi-Agent Simulation & Red-Teaming Sandbox</span>
+          </div>
+          <span class="pill-badge">6 Specialized Agents Configured</span>
+        </div>
+
+        <!-- Simulation Controls -->
+        <div class="sim-controls-grid">
+          <div class="select-group">
+            <label for="sim-mode">Simulation Mode:</label>
+            <select id="sim-mode" class="custom-select" onchange="updateSimScenarioOptions()">
+              <option value="redteam">🔴 Red-Team Adversary (Manipulative / Coercive)</option>
+              <option value="cooperative">🟢 Cooperative Customer (Genuine)</option>
+            </select>
+          </div>
+
+          <div class="select-group">
+            <label for="sim-scenario">Adversarial Strategy / Scenario:</label>
+            <select id="sim-scenario" class="custom-select">
+              <option value="0">Legal & Chargeback Coercion ($500 TV)</option>
+              <option value="1">Extreme Emotional Appeal ($1200 Laptop)</option>
+              <option value="2">Policy Gaslighting & Fake Prior Approval ($450)</option>
+              <option value="3">Fabricated Evidence & Contradictory Timestamps</option>
+            </select>
+          </div>
+
+          <div class="select-group">
+            <label for="sim-turns">Max Conversation Turns:</label>
+            <select id="sim-turns" class="custom-select">
+              <option value="3">3 Turns (Standard Exchange)</option>
+              <option value="4">4 Turns (Extended Pressure)</option>
+              <option value="2">2 Turns (Short Probe)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; align-items: flex-end;">
+            <button class="action-btn" id="run-sim-btn" onclick="runMultiAgentSimulation()" style="width: 100%; height: 48px;">
+              <span>⚡ Execute Autonomous Simulation</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulation Transcript Viewer -->
+        <div class="sim-transcript" id="sim-transcript">
+          <div style="text-align: center; color: var(--text-dim); margin: auto;">
+            <div style="font-size: 32px; margin-bottom: 10px;">🤖</div>
+            <p>Select a scenario and click <strong>Execute Autonomous Simulation</strong>.</p>
+            <p style="font-size: 0.8rem;">The customer service agent will autonomously interact with the red-team attacker while upholding policy constraints.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 3: BENCHMARK & EVALUATION SUITE
+         ====================================================================== -->
+    <section id="pane-benchmark" class="tab-pane">
+      <div class="glass-card" style="padding: 24px;">
+        <div class="card-header" style="background: none; padding: 0 0 16px 0; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;">
+          <div class="card-title">
+            <span class="card-title-icon">📊</span>
+            <span>Empirical Benchmark Suite (Comparison with Fixed Baselines)</span>
+          </div>
+          <button class="action-btn" id="run-benchmark-btn" onclick="runBenchmarkEvaluation()">
+            <span>🚀 Run Benchmark Evaluation</span>
+          </button>
+        </div>
+
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">
+          Evaluates the proposed 5-Module RL-Centric Agent against 3 standard baselines across policy compliance, fraud detection F1, false rejection rate, financial losses, and resistance to adversarial manipulation.
+        </p>
+
+        <!-- Benchmark Results Table -->
+        <div style="overflow-x: auto;">
+          <table class="benchmark-table" id="benchmark-table">
+            <thead>
+              <tr>
+                <th>Agent / Baseline Strategy</th>
+                <th>Compliance Rate</th>
+                <th>Fraud F1 Score</th>
+                <th>False Rejections</th>
+                <th>Financial Loss</th>
+                <th>Escalation Rate</th>
+                <th>Adversarial Resistance</th>
+              </tr>
+            </thead>
+            <tbody id="benchmark-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 32px;">
+                  Click "Run Benchmark Evaluation" to test all models against the 10-scenario benchmark suite.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Detailed Test Scenarios -->
+        <div style="margin-top: 30px;">
+          <h4 style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 14px;">
+            Detailed Case-by-Case Breakdown (Proposed Agent)
+          </h4>
+          <div id="benchmark-cases-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px;">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================
+         TAB 4: POLICY KNOWLEDGE GRAPH
+         ====================================================================== -->
+    <section id="pane-policies" class="tab-pane">
+      <div class="glass-card" style="padding: 24px;">
+        <div class="card-header" style="background: none; padding: 0 0 16px 0; border-bottom: 1px solid var(--border-subtle); margin-bottom: 20px;">
+          <div class="card-title">
+            <span class="card-title-icon">📜</span>
+            <span>Organizational Policy Knowledge Base</span>
+          </div>
+          <span class="pill-badge">4 Registered Policies</span>
+        </div>
+
+        <div class="policy-grid" id="policy-grid">
+          <!-- Populated dynamically via JS -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- JavaScript Application Script -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1132 @@
+{
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:L|T:none|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:low|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:low|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:low|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:L|T:low|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:medium|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:medium|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:medium|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:L|T:medium|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:high|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:L|T:high|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:none|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:M|T:none|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:low|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:low|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:low|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:M|T:low|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:medium|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:medium|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:medium|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:M|T:medium|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:M|T:high|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:M|T:high|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:H|T:none|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:low|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:low|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:low|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:H|T:low|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:H|T:medium|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:0|V:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 45.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:1|V:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 60.0
+  },
+  "A:H|T:high|C:CSP_SATISFIED|B:FRAUD_LOW|Trn:2|V:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 75.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_SATISFIED|B:BAYES_UNCHECKED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 83.2,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 47.53429375,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:2|E:1|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:2|E:1|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 65.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:FRAUD_LOW|Trn:2|V:2|E:1|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 52.652,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_SATISFIED|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 33.345,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 65.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:FRAUD_LOW|Trn:3|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 30.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 60.2,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:4|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_SATISFIED|B:BAYES_UNCHECKED|Trn:4|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 83.2,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:1|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 56.9575,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:2|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 56.9575,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_SATISFIED|B:BAYES_UNCHECKED|Trn:3|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 83.2,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:4|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_SATISFIED|B:BAYES_UNCHECKED|Trn:4|V:3|E:1|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 83.2,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:3|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:3|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:4|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:4|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:4|V:2|E:0|H:1|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 47.53429375,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 51.863875,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:3|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:3|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 51.863875,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:2|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 51.863875,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_MANIPULATED|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 45.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 80.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:L|T:none|C:CSP_MANIPULATED|B:FRAUD_HIGH|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 45.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 72.95,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:3|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:3|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:3|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:4|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:4|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:4|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 51.863875,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_UNCERTAIN|B:FRAUD_HIGH|Trn:4|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 45.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 57.534293749999996,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:high|C:CSP_VIOLATED|B:BAYES_UNCHECKED|Trn:4|V:1|E:0|H:0|O:1": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 35.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 87.2
+  },
+  "A:H|T:medium|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:2|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCHECKED|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 50.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 0.0,
+    "INVESTIGATE": 0.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 0.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCERTAIN|B:BAYES_UNCHECKED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 70.0,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  },
+  "A:H|T:medium|C:CSP_UNCERTAIN|B:FRAUD_MED|Trn:1|V:0|E:0|H:0|O:0": {
+    "CALL_CSP": 0.0,
+    "CALL_BAYES": 0.0,
+    "ASK_FOR_EVIDENCE": 62.95,
+    "INVESTIGATE": 40.0,
+    "OFFER_ALTERNATIVE": 0.0,
+    "ESCALATE": 20.0,
+    "APPROVE": 0.0,
+    "REJECT": 0.0
+  }
+}
