@@ -27,6 +27,8 @@ from shared.models import (
     ActionType, ClaimExtraction, CSPResult, RiskAssessment,
     ConstraintStatus, ThreatLevel, EvidenceStrength, ConversationState
 )
+from module4.contextual_bandit import LinUCBBandit, BANDIT_ARMS
+from module4.context_vector import build_context_vector, CONTEXT_DIMENSION
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +49,33 @@ class RLAgent:
         ActionType.OFFER_ALTERNATIVE,
     ]
 
+    Q_ARMS = [
+        ActionType.APPROVE,              # Arm 0 (Terminal)
+        ActionType.REJECT,               # Arm 1 (Terminal)
+        ActionType.ASK_FOR_EVIDENCE,     # Arm 2 (Non-terminal)
+        ActionType.INVESTIGATE,          # Arm 3 (Non-terminal)
+        ActionType.OFFER_ALTERNATIVE,    # Arm 4 (Terminal)
+        ActionType.ESCALATE,             # Arm 5 (Terminal)
+    ]
+
+    ARM_TO_ACTION = {
+        0: ActionType.APPROVE,
+        1: ActionType.REJECT,
+        2: ActionType.ASK_FOR_EVIDENCE,
+        3: ActionType.INVESTIGATE,
+        4: ActionType.OFFER_ALTERNATIVE,
+        5: ActionType.ESCALATE,
+    }
+
+    ACTION_TO_ARM = {
+        ActionType.APPROVE: 0,
+        ActionType.REJECT: 1,
+        ActionType.ASK_FOR_EVIDENCE: 2,
+        ActionType.INVESTIGATE: 3,
+        ActionType.OFFER_ALTERNATIVE: 4,
+        ActionType.ESCALATE: 5,
+    }
+
     ALL_ACTIONS = [
         ActionType.CALL_CSP,
         ActionType.CALL_BAYES,
@@ -59,7 +88,9 @@ class RLAgent:
     ]
 
     def __init__(self, learning_rate: float = 0.15, discount_factor: float = 0.90,
-                 epsilon: float = 0.0, q_table_path: Optional[str] = None):
+                 epsilon: float = 0.0, q_table_path: Optional[str] = None,
+                 bandit_weights_path: Optional[str] = None,
+                 q_table_54k_path: Optional[str] = None):
         self.lr = learning_rate
         self.gamma = discount_factor
         self.epsilon = epsilon
@@ -69,6 +100,227 @@ class RLAgent:
             os.path.dirname(__file__), "q_table.json"
         )
         self._load_or_init_q_table()
+
+        # 54k Tabular Q-Table Engine (Idea 1)
+        self.q_table_54k: Optional[np.ndarray] = None
+        self.q_table_54k_path = q_table_54k_path or os.path.join(
+            os.path.dirname(__file__), "q_table_54k.npy"
+        )
+        if os.path.exists(self.q_table_54k_path):
+            try:
+                self.q_table_54k = np.load(self.q_table_54k_path)
+                logger.info("Loaded 54k Q-table from %s", self.q_table_54k_path)
+            except Exception as exc:
+                logger.warning("Could not load 54k Q-table: %s", exc)
+
+        # Contextual Bandit (LinUCB) Engine
+        self.bandit = LinUCBBandit(n_features=CONTEXT_DIMENSION, n_arms=6, alpha=0.50)
+        self.bandit_weights_path = bandit_weights_path or os.path.join(
+            os.path.dirname(__file__), "bandit_weights.npz"
+        )
+        if os.path.exists(self.bandit_weights_path):
+            try:
+                self.bandit.load_weights(self.bandit_weights_path)
+            except Exception as exc:
+                logger.warning("Could not load bandit weights: %s", exc)
+
+    @staticmethod
+    def encode_state_id(
+        conv_state: Optional[ConversationState] = None,
+        policy_id: Optional[int] = None,
+        constraint_state: Optional[int] = None,
+        evidence_rel: Optional[int] = None,
+        turn: Optional[int] = None,
+        fraud_prob_bucket: Optional[int] = None,
+    ) -> int:
+        """
+        Encode discrete state into state_id in [0, 53999]:
+          state_id = (((policy_id * 27 + constraint_state) * 4 + evidence_rel) * 10 + turn) * 10 + fraud_prob_bucket
+        Can be called with (conv_state) or individual components.
+        """
+        if conv_state is not None:
+            claim = conv_state.claim
+            csp = conv_state.csp_result
+            risk = conv_state.risk_assessment
+
+            # 1. Policy ID (0..4)
+            if policy_id is None:
+                intent = (claim.intent.lower() if claim and claim.intent else "")
+                policy_names = " ".join(csp.applicable_policies).lower() if csp else ""
+                combined = f"{intent} {policy_names}"
+
+                if "refund" in combined:
+                    policy_id = 0
+                elif any(k in combined for k in ("return", "exchange", "replacement")):
+                    policy_id = 1
+                elif any(k in combined for k in ("warranty", "defect", "insurance")):
+                    policy_id = 2
+                elif any(k in combined for k in ("cancel", "price_match", "payment", "order_modification")):
+                    policy_id = 3
+                elif any(k in combined for k in ("delivery", "shipment", "missing", "courier")):
+                    policy_id = 4
+                else:
+                    policy_id = 0
+
+            # 2. Constraint State (0..26)
+            if constraint_state is None:
+                c1, c2, c3 = 1, 1, 1
+                if csp is not None and csp.constraints:
+                    c1_statuses = []
+                    c2_statuses = []
+                    c3_statuses = []
+                    for k, s in csp.constraints.items():
+                        kl = k.lower()
+                        if any(w in kl for w in ("order", "record", "payment", "account", "c1")):
+                            c1_statuses.append(s)
+                        elif any(w in kl for w in ("window", "eligibility", "deadline", "days", "status", "c2")):
+                            c2_statuses.append(s)
+                        elif any(w in kl for w in ("evidence", "receipt", "photo", "proof", "document", "c3")):
+                            c3_statuses.append(s)
+
+                    def _resolve_status(statuses, default_val=1):
+                        if not statuses:
+                            return default_val
+                        if any(s in (ConstraintStatus.VIOLATED, ConstraintStatus.POTENTIALLY_MANIPULATED) for s in statuses):
+                            return 0
+                        if all(s == ConstraintStatus.SATISFIED for s in statuses):
+                            return 2
+                        return 1
+
+                    c1 = _resolve_status(c1_statuses, 2 if "order_lookup" in conv_state.completed_verifications else 1)
+                    c2 = _resolve_status(c2_statuses, 2)
+                    c3 = _resolve_status(c3_statuses, 2 if (claim and claim.evidence_provided) else 1)
+                else:
+                    if "order_lookup" in conv_state.completed_verifications:
+                        c1 = 2
+                    if claim and claim.evidence_provided:
+                        c3 = 2
+
+                constraint_state = (c1 * 9) + (c2 * 3) + c3
+
+            # 3. Evidence Reliability (0..3)
+            if evidence_rel is None:
+                if risk is not None:
+                    ev_map = {
+                        EvidenceStrength.MISSING: 0,
+                        EvidenceStrength.WEAK: 1,
+                        EvidenceStrength.CONTRADICTORY: 2,
+                        EvidenceStrength.FABRICATED: 2,
+                        EvidenceStrength.MODERATE: 3,
+                        EvidenceStrength.STRONG: 3,
+                    }
+                    evidence_rel = ev_map.get(risk.evidence_strength, 1)
+                elif claim is not None:
+                    if any(t in claim.adversarial_tactics for t in ("contradiction", "fabricated_evidence")):
+                        evidence_rel = 2
+                    elif claim.evidence_provided:
+                        evidence_rel = 3
+                    else:
+                        evidence_rel = 0
+                else:
+                    evidence_rel = 0
+
+            # 4. Turn (0..9)
+            if turn is None:
+                turn = min(9, max(0, conv_state.turn))
+
+            # 5. Fraud Probability Bucket (0..9)
+            if fraud_prob_bucket is None:
+                if risk is not None:
+                    fraud_prob_bucket = min(9, max(0, int(risk.fraud_probability * 10)))
+                elif claim is not None and claim.threat_level in (ThreatLevel.HIGH, ThreatLevel.MEDIUM):
+                    fraud_prob_bucket = 7
+                else:
+                    fraud_prob_bucket = 2
+
+        # Clamp all variables to valid ranges
+        p = min(4, max(0, int(policy_id if policy_id is not None else 0)))
+        cs = min(26, max(0, int(constraint_state if constraint_state is not None else 13)))
+        ev = min(3, max(0, int(evidence_rel if evidence_rel is not None else 0)))
+        t = min(9, max(0, int(turn if turn is not None else 0)))
+        fb = min(9, max(0, int(fraud_prob_bucket if fraud_prob_bucket is not None else 2)))
+
+        return (((p * 27 + cs) * 4 + ev) * 10 + t) * 10 + fb
+
+    @staticmethod
+    def decode_state_id(state_id: int) -> Tuple[int, int, int, int, int]:
+        """Decode state_id in [0, 53999] into (policy_id, constraint_state, evidence_rel, turn, fraud_prob_bucket)."""
+        bucket = state_id % 10
+        rem1 = state_id // 10
+        turn = rem1 % 10
+        rem2 = rem1 // 10
+        evidence_rel = rem2 % 4
+        rem3 = rem2 // 4
+        constraint_state = rem3 % 27
+        policy_id = rem3 // 27
+        return policy_id, constraint_state, evidence_rel, turn, bucket
+
+    def select_q_action(
+        self,
+        conv_state: ConversationState,
+        valid_actions: Optional[List[ActionType]] = None,
+        force_exploitation: bool = True,
+    ) -> Tuple[ActionType, int, Dict[str, float]]:
+        """
+        Select action using the trained 54,000-state Tabular Q-Table.
+        Applies action masking over valid actions to enforce business invariants.
+        Returns (chosen_action, state_id, q_values_dict).
+        """
+        state_id = self.encode_state_id(conv_state)
+
+        if valid_actions is None:
+            valid_actions = self.get_valid_actions(conv_state, csp_queried=True, bayes_queried=True)
+
+        valid_arms = [self.ACTION_TO_ARM[a] for a in valid_actions if a in self.ACTION_TO_ARM]
+        if not valid_arms:
+            valid_arms = list(range(6))
+
+        if self.q_table_54k is not None and 0 <= state_id < len(self.q_table_54k):
+            q_row = self.q_table_54k[state_id]
+        else:
+            q_row = np.zeros(6, dtype=np.float32)
+
+        q_dict = {self.ARM_TO_ACTION[i].value: float(q_row[i]) for i in range(6)}
+
+        # Exploration vs Exploitation
+        if not force_exploitation and random.random() < self.epsilon:
+            chosen_arm = random.choice(valid_arms)
+        else:
+            best_arm = valid_arms[0]
+            best_val = q_row[best_arm]
+            for arm in valid_arms[1:]:
+                if q_row[arm] > best_val:
+                    best_val = q_row[arm]
+                    best_arm = arm
+            chosen_arm = best_arm
+
+        chosen_action = self.ARM_TO_ACTION[chosen_arm]
+        return chosen_action, state_id, q_dict
+
+    def select_bandit_action(
+        self,
+        conv_state: ConversationState,
+        explore: bool = False,
+    ) -> Tuple[ActionType, np.ndarray, np.ndarray]:
+        """
+        Select action using the trained LinUCB Contextual Bandit over the 20-D context vector.
+        Returns (chosen_action, context_vector, ucb_scores).
+        """
+        context = build_context_vector(
+            claim=conv_state.claim,
+            csp_result=conv_state.csp_result,
+            risk_assessment=conv_state.risk_assessment,
+            conv_state=conv_state,
+        )
+
+        valid_actions = self.get_valid_actions(conv_state, csp_queried=True, bayes_queried=True)
+        valid_arms = [self.bandit.action_to_arm(a) for a in valid_actions if a in self.EXTERNAL_ACTIONS]
+        if not valid_arms:
+            valid_arms = list(range(6))
+
+        arm_idx, scores = self.bandit.select_arm(context, valid_arms=valid_arms, explore=explore)
+        action = self.bandit.arm_to_action(arm_idx)
+        return action, context, scores
 
     # ---------------------------------------------------------------------------
     # State Representation & Discretization
@@ -212,13 +464,29 @@ class RLAgent:
                       bayes_queried: bool,
                       force_exploitation: bool = False) -> Tuple[ActionType, Dict[str, float]]:
         """
-        Epsilon-greedy action selection over valid action mask.
-        Returns the chosen ActionType and the dictionary of Q-values for the state.
+        Action selection over valid action mask.
+        1. If epistemic action needed (CALL_CSP, CALL_BAYES), select it deterministically.
+        2. For external macro actions, use the trained 54,000-state Tabular Q-Table if loaded.
+        3. Fall back to discretized hash Q-table if 54k table is not available.
         """
-        state_key = self.discretize_state(conv_state, csp_queried, bayes_queried)
         valid_actions = self.get_valid_actions(conv_state, csp_queried, bayes_queried)
 
-        # Ensure state exists in Q-table
+        # 1. Handle epistemic actions
+        if valid_actions in ([ActionType.CALL_CSP], [ActionType.CALL_BAYES]):
+            chosen_action = valid_actions[0]
+            return chosen_action, {chosen_action.value: 100.0}
+
+        # 2. For external actions, utilize the 54,000-state Tabular Q-Table (Idea 1)
+        if self.q_table_54k is not None and not any(
+            a in valid_actions for a in (ActionType.CALL_CSP, ActionType.CALL_BAYES)
+        ):
+            chosen_action, state_id, q_dict = self.select_q_action(
+                conv_state, valid_actions=valid_actions, force_exploitation=force_exploitation
+            )
+            return chosen_action, q_dict
+
+        # 3. Fallback to discrete hash Q-table
+        state_key = self.discretize_state(conv_state, csp_queried, bayes_queried)
         if state_key not in self.q_table:
             self.q_table[state_key] = {a.value: 0.0 for a in self.ALL_ACTIONS}
             self._seed_state_values(self.q_table[state_key], conv_state)
@@ -229,7 +497,6 @@ class RLAgent:
         if not force_exploitation and random.random() < self.epsilon:
             chosen_action = random.choice(valid_actions)
         else:
-            # Pick valid action with highest Q-value
             best_val = float('-inf')
             best_acts = []
             for act in valid_actions:

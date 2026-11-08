@@ -1,12 +1,21 @@
 """Evidence graph connecting user-reported documents to policy constraints."""
 
 import re
+import sys
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Set
+
+_WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+if str(_WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_WORKSPACE_ROOT))
 
 from shared.models import ClaimExtraction
 
-from .policy_graph import Policy, PolicyGraph
+try:
+    from .policy_graph import Policy, PolicyGraph
+except ImportError:
+    from module1.policy_graph import Policy, PolicyGraph
 
 
 @dataclass
@@ -94,7 +103,27 @@ class EvidenceGraph:
         },
         "item_condition": {
             "label": "Returned-item condition inspection",
-            "types": ["inspection_report"],
+            "types": ["inspection_report", "photo"],
+        },
+        "tracking_number": {
+            "label": "Carrier tracking number or dispatch confirmation",
+            "types": ["tracking", "tracking_number", "delivery_confirmation"],
+        },
+        "delivery_date": {
+            "label": "Delivery confirmation or shipment tracking record",
+            "types": ["tracking", "delivery_confirmation", "receipt", "transaction_record"],
+        },
+        "packaging_tag_check_status": {
+            "label": "Original packaging and tags verification",
+            "types": ["photo", "packaging_tags", "inspection_report", "other_document"],
+        },
+        "required_parts_check_status": {
+            "label": "Required parts and accessories inspection",
+            "types": ["photo", "inspection_report", "other_document"],
+        },
+        "reported_defect": {
+            "label": "Reported defect or damage documentation",
+            "types": ["photo", "video", "inspection_report"],
         },
     }
 
@@ -124,21 +153,38 @@ class EvidenceGraph:
             for requirement in self.requirements_by_policy.get(policy.policy_id, [])
         ]
         field_statuses: Dict[str, str] = {}
-        provided_nodes = [
-            {
+        support_lookup = {
+            item.get("evidence_type"): item
+            for item in getattr(claim, "supporting_evidence", [])
+            if "evidence_type" in item
+        }
+        evidence_conflict = any(
+            c.get("type") == "evidence_conflict"
+            for c in getattr(claim, "contradictory_claims", [])
+        )
+
+        provided_nodes = []
+        for evidence_type in sorted(provided):
+            status = (
+                "verified" if (
+                    evidence_type in {"order_id", "transaction_record"} and
+                    order_record
+                ) or (
+                    "evidence_check" in verifications and
+                    evidence_type != "order_id"
+                ) else "reported"
+            )
+            if evidence_conflict and evidence_type in {"receipt", "photo", "other_document"}:
+                status = "contradictory"
+
+            node_data = {
                 "type": evidence_type,
-                "status": (
-                    "verified" if (
-                        evidence_type in {"order_id", "transaction_record"} and
-                        order_record
-                    ) or (
-                        "evidence_check" in verifications and
-                        evidence_type != "order_id"
-                    ) else "reported"
-                ),
+                "status": status,
             }
-            for evidence_type in sorted(provided)
-        ]
+            if evidence_type in support_lookup:
+                node_data["snippet"] = support_lookup[evidence_type].get("snippet", "")
+                node_data["confidence"] = support_lookup[evidence_type].get("confidence", 0.95)
+            provided_nodes.append(node_data)
 
         links: List[Dict[str, str]] = []
         for requirement in requirements:
@@ -150,13 +196,16 @@ class EvidenceGraph:
             if field == "order_id":
                 status = "verified" if order_record else "missing"
             elif matching_types:
-                status = (
-                    "verified" if (
-                        "transaction_record" in matching_types and order_record
-                    ) or (
-                        "evidence_check" in verifications
-                    ) else "reported"
-                )
+                if evidence_conflict and any(t in {"receipt", "photo", "other_document"} for t in matching_types):
+                    status = "contradictory"
+                else:
+                    status = (
+                        "verified" if (
+                            "transaction_record" in matching_types and order_record
+                        ) or (
+                            "evidence_check" in verifications
+                        ) else "reported"
+                    )
             else:
                 status = "missing"
             field_statuses[field] = status
@@ -183,7 +232,7 @@ class EvidenceGraph:
             for field in sorted(self._collect_fields(constraint)):
                 metadata = self.FIELD_EVIDENCE.get(field)
                 field_is_evidence = re.search(
-                    r"evidence|proof|receipt|report|signature|inspection|document",
+                    r"evidence|proof|receipt|report|signature|inspection|document|tracking",
                     field,
                     re.IGNORECASE,
                 )

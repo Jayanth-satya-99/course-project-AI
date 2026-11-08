@@ -222,6 +222,45 @@ class MinimaxEngine:
                              "aggressive", 0.0, 0.0, 0.7)
             )
 
+        # Dynamic moves driven by granular threats
+        if getattr(claim, "threats", None):
+            if "legal_action" in claim.threats:
+                base_moves.append(
+                    DialogueMove("usr_legal_threat", "Customer threatens legal action or attorney involvement",
+                                 "threatening", 0.0, 0.0, 0.75)
+                )
+            if "chargeback" in claim.threats:
+                base_moves.append(
+                    DialogueMove("usr_chargeback_threat", "Customer threatens credit card chargeback",
+                                 "threatening", 0.0, 0.0, 0.65)
+                )
+            if "social_media_exposure" in claim.threats:
+                base_moves.append(
+                    DialogueMove("usr_social_threat", "Customer threatens social media backlash",
+                                 "threatening", 0.0, 0.0, 0.55)
+                )
+
+        # Dynamic moves driven by emotional appeals
+        if getattr(claim, "emotional_appeals", None):
+            base_moves.append(
+                DialogueMove("usr_hardship_plea", f"Customer appeals to emotion ({', '.join(claim.emotional_appeals[:2])})",
+                             "emotional", 0.0, 0.0, 0.45)
+            )
+
+        # Dynamic moves driven by contradictory claims
+        if getattr(claim, "contradictory_claims", None):
+            base_moves.append(
+                DialogueMove("usr_contradiction", "Customer shifts factual statements and contradicts claims",
+                             "manipulative", 0.0, 0.0, 0.80)
+            )
+
+        # Dynamic moves driven by persuasive strategies
+        if getattr(claim, "persuasive_strategies", None) and "policy_gaslighting" in claim.persuasive_strategies:
+            base_moves.append(
+                DialogueMove("usr_gaslight", "Customer falsely asserts unauthorized policy exceptions",
+                             "manipulative", 0.0, 0.0, 0.60)
+            )
+
         # Score user moves: minimiser wants to minimise agent's score
         for move in base_moves:
             # User move score = negative of the risk it poses to the agent

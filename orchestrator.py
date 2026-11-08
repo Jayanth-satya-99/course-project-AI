@@ -22,7 +22,9 @@
 #               ▼
 #       [Module 5 GenAI] (The Voice: Grounded, empathetic customer explanation)
 
-from typing import Dict, List, Optional, Any
+import json
+from pathlib import Path
+from typing import Dict, List, Optional, Any, Union
 import uuid
 from dataclasses import replace
 
@@ -113,16 +115,67 @@ class PolicyAdherentOrchestrator:
         tactics = list(dict.fromkeys(
             previous.adversarial_tactics + incoming.adversarial_tactics
         ))
-        contradictions = (
-            (previous.amount > 0 and incoming.amount > 0 and
-             previous.amount != incoming.amount) or
-            (previous.order_id and incoming.order_id and
-             previous.order_id != incoming.order_id) or
-            (previous.purchase_date and incoming.purchase_date and
-             previous.purchase_date != incoming.purchase_date)
-        )
-        if contradictions and "contradiction" not in tactics:
+
+        contradictory_claims = list(previous.contradictory_claims)
+        for c in incoming.contradictory_claims:
+            if c not in contradictory_claims:
+                contradictory_claims.append(c)
+
+        # Cross-turn contradiction checks between previous and incoming claims
+        if (
+            previous.amount > 0 and incoming.amount > 0 and
+            abs(previous.amount - incoming.amount) > 0.01
+        ):
+            mismatch = {
+                "type": "amount_mismatch",
+                "source": "cross_turn",
+                "claim_a": f"${previous.amount:.2f}",
+                "claim_b": f"${incoming.amount:.2f}",
+                "description": f"Claimed amount changed from ${previous.amount:.2f} to ${incoming.amount:.2f} across conversation turns.",
+            }
+            if mismatch not in contradictory_claims:
+                contradictory_claims.append(mismatch)
+
+        if previous.order_id and incoming.order_id and previous.order_id != incoming.order_id:
+            mismatch = {
+                "type": "order_mismatch",
+                "source": "cross_turn",
+                "claim_a": previous.order_id,
+                "claim_b": incoming.order_id,
+                "description": f"Order ID changed from {previous.order_id} to {incoming.order_id} across conversation turns.",
+            }
+            if mismatch not in contradictory_claims:
+                contradictory_claims.append(mismatch)
+
+        if previous.purchase_date and incoming.purchase_date and previous.purchase_date != incoming.purchase_date:
+            mismatch = {
+                "type": "date_mismatch",
+                "source": "cross_turn",
+                "claim_a": previous.purchase_date,
+                "claim_b": incoming.purchase_date,
+                "description": f"Purchase date changed from {previous.purchase_date} to {incoming.purchase_date} across conversation turns.",
+            }
+            if mismatch not in contradictory_claims:
+                contradictory_claims.append(mismatch)
+
+        has_contradictions = bool(contradictory_claims)
+        if has_contradictions and "contradiction" not in tactics:
             tactics.append("contradiction")
+
+        # Merge supporting evidence
+        merged_supporting = list(previous.supporting_evidence)
+        seen_evidence_types = {e["evidence_type"] for e in merged_supporting if "evidence_type" in e}
+        for item in incoming.supporting_evidence:
+            if item.get("evidence_type") not in seen_evidence_types:
+                merged_supporting.append(item)
+                seen_evidence_types.add(item.get("evidence_type"))
+
+        # Merge emotional appeals and threats
+        emotional_appeals = list(dict.fromkeys(previous.emotional_appeals + incoming.emotional_appeals))
+        threats = list(dict.fromkeys(previous.threats + incoming.threats))
+        persuasive_strategies = list(dict.fromkeys(previous.persuasive_strategies + incoming.persuasive_strategies))
+        if has_contradictions and "fact_shifting" not in persuasive_strategies:
+            persuasive_strategies.append("fact_shifting")
 
         threat_order = {
             ThreatLevel.NONE: 0,
@@ -134,13 +187,13 @@ class PolicyAdherentOrchestrator:
             incoming,
             intent=incoming.intent if incoming.intent != "complaint" else previous.intent,
             amount=(
-                previous.amount if contradictions and previous.amount > 0
+                previous.amount if has_contradictions and previous.amount > 0
                 else incoming.amount or previous.amount
             ),
             item=incoming.item if incoming.item != "item" else previous.item,
             purchase_date=incoming.purchase_date or previous.purchase_date,
             order_id=(
-                previous.order_id if contradictions and previous.order_id
+                previous.order_id if has_contradictions and previous.order_id
                 else incoming.order_id or previous.order_id
             ),
             evidence_provided=list(dict.fromkeys(
@@ -157,7 +210,109 @@ class PolicyAdherentOrchestrator:
                 if incoming.claimed_previous_claims is not None
                 else previous.claimed_previous_claims
             ),
+            contradictory_claims=contradictory_claims,
+            supporting_evidence=merged_supporting,
+            emotional_appeals=emotional_appeals,
+            threats=threats,
+            persuasive_strategies=persuasive_strategies,
+            conversation_history=incoming.conversation_history or previous.conversation_history,
         )
+
+    def process_claim_file(self, claim_file: Union[str, Path],
+                           output_dir: Optional[Union[str, Path]] = None,
+                           session_id: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Execute the full pipeline taking input from a ClaimExtraction JSON file,
+        saving intermediate artifacts (csp_result.json, risk_assessment.json)
+        and final response (pipeline_response.json) into output_dir.
+        """
+        claim_path = Path(claim_file)
+        if not claim_path.exists():
+            raise FileNotFoundError(f"Claim file not found: {claim_file}")
+
+        claim = ClaimExtraction.from_file(claim_path)
+        out_dir = Path(output_dir) if output_dir else claim_path.parent
+        out_dir.mkdir(parents=True, exist_ok=True)
+
+        conv = self.get_or_create_session(session_id)
+        conv.turn += 1
+        conv.claim = claim
+        if claim.order_id and self.csp_solver.get_order_record(claim.order_id):
+            if "order_lookup" not in conv.completed_verifications:
+                conv.completed_verifications.append("order_lookup")
+
+        # Step 1: CSP Evaluation (Module 1)
+        evidence_graph_res = self.evidence_graph.search(
+            claim, conv.completed_verifications,
+            self.csp_solver.get_order_record(claim.order_id) if claim.order_id else None
+        )
+        csp_result = self.csp_solver.evaluate(claim, conv.completed_verifications, evidence_graph_res)
+        conv.csp_result = csp_result
+        csp_out_path = out_dir / "csp_result.json"
+        csp_result.to_file(csp_out_path)
+
+        # Step 2: Bayesian Risk Assessment (Module 3)
+        risk = self.bayes_assessor.assess_risk(claim, csp_result, conv.completed_verifications)
+        conv.risk_assessment = risk
+        risk_out_path = out_dir / "risk_assessment.json"
+        risk.to_file(risk_out_path)
+
+        # Step 3: Strategic RL Action Selection (Module 4) & Sequential Planning (Module 2)
+        action, q_vals = self.rl_agent.select_action(
+            conv, csp_queried=True, bayes_queried=True, force_exploitation=True
+        )
+        conv.current_action = action
+        plan_result = self.planner.generate_plan("case_resolved", conv)
+        conv.plan_result = plan_result
+
+        # Step 4: Minimax Tactical Search (Module 1)
+        applicable_clauses = csp_result.applicable_policies
+        minimax_result = self.minimax_engine.search(action, claim, applicable_clauses)
+        conv.minimax_result = minimax_result
+
+        # Step 5: Grounded Explanation Generation (Module 5)
+        try:
+            response = self.generator.generate(
+                action=action,
+                claim=claim,
+                csp_result=csp_result,
+                risk_assessment=risk,
+                plan_result=plan_result,
+                minimax_result=minimax_result,
+            )
+            response_text = response.text
+            cited_policies = response.cited_policies
+            evidence_status = response.evidence_status
+        except Exception:
+            from module5.generator import ResponseGenerator
+            fallback_gen = ResponseGenerator(provider="template")
+            response = fallback_gen.generate(
+                action=action,
+                claim=claim,
+                csp_result=csp_result,
+                risk_assessment=risk,
+                plan_result=plan_result,
+                minimax_result=minimax_result,
+            )
+            response_text = response.text
+            cited_policies = response.cited_policies
+            evidence_status = response.evidence_status
+
+        trace_out = {
+            "session_id": conv.session_id,
+            "claim_file": str(claim_path),
+            "csp_result_file": str(csp_out_path),
+            "risk_assessment_file": str(risk_out_path),
+            "action": action.value if hasattr(action, "value") else str(action),
+            "plan_approved": plan_result.action_approved,
+            "response_text": response_text,
+            "cited_policies": cited_policies,
+            "evidence_status": evidence_status,
+        }
+        response_out_path = out_dir / "pipeline_response.json"
+        response_out_path.write_text(json.dumps(trace_out, indent=2), encoding="utf-8")
+        trace_out["pipeline_response_file"] = str(response_out_path)
+        return trace_out
 
     def process_message(self, user_text: str, session_id: Optional[str] = None,
                         learn: bool = True) -> Dict[str, Any]:
@@ -181,7 +336,7 @@ class PolicyAdherentOrchestrator:
         # -----------------------------------------------------------------------
         # Step 1: NLU Ingestion & Extraction (Module 4)
         # -----------------------------------------------------------------------
-        claim = self.nlu.extract(user_text)
+        claim = self.nlu.extract(user_text, conv.conversation_history)
         if conv.claim and not conv.resolved:
             claim = self._merge_claims(conv.claim, claim)
         conv.claim = claim
@@ -224,6 +379,12 @@ class PolicyAdherentOrchestrator:
                 "threat_level": claim.threat_level.value,
                 "sentiment": claim.sentiment.value,
                 "adversarial_tactics": claim.adversarial_tactics,
+                "contradictory_claims": claim.contradictory_claims,
+                "supporting_evidence": claim.supporting_evidence,
+                "emotional_appeals": claim.emotional_appeals,
+                "threats": claim.threats,
+                "persuasive_strategies": claim.persuasive_strategies,
+                "conversation_history": claim.conversation_history,
             }
         })
 
@@ -388,14 +549,25 @@ class PolicyAdherentOrchestrator:
         # -----------------------------------------------------------------------
         # Step 5: Grounded Response Generation (Module 5)
         # -----------------------------------------------------------------------
-        generated_resp = self.generator.generate(
-            action=chosen_action,
-            claim=claim,
-            csp_result=conv.csp_result,
-            risk_assessment=conv.risk_assessment,
-            plan_result=plan_result,
-            minimax_result=minimax_result
-        )
+        try:
+            generated_resp = self.generator.generate(
+                action=chosen_action,
+                claim=claim,
+                csp_result=conv.csp_result,
+                risk_assessment=conv.risk_assessment,
+                plan_result=plan_result,
+                minimax_result=minimax_result
+            )
+        except Exception:
+            fallback_gen = ResponseGenerator(provider="template")
+            generated_resp = fallback_gen.generate(
+                action=chosen_action,
+                claim=claim,
+                csp_result=conv.csp_result,
+                risk_assessment=conv.risk_assessment,
+                plan_result=plan_result,
+                minimax_result=minimax_result
+            )
         conv.conversation_history.append({"role": "assistant", "content": generated_resp.text})
 
         trace["pipeline_steps"].append({

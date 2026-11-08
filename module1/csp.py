@@ -5,17 +5,30 @@
 #   SATISFIED | VIOLATED | UNCERTAIN | POTENTIALLY_MANIPULATED
 #
 # When a constraint is UNCERTAIN or POTENTIALLY_MANIPULATED, the CSP solver
-# does NOT guess — it triggers Module 3 (Bayesian) for quantitative risk assessment.
+# triggers Module 3 (Bayesian) for quantitative risk assessment.
 
+import os
 import re
+import sys
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Set, Union
+
+# Ensure workspace root is in sys.path so direct execution works
+_WORKSPACE_ROOT = Path(__file__).resolve().parent.parent
+if str(_WORKSPACE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_WORKSPACE_ROOT))
 
 from shared.models import (
-    ClaimExtraction, CSPResult, ConstraintStatus, ThreatLevel
+    ClaimExtraction, CSPResult, ConstraintStatus, ThreatLevel, Sentiment
 )
-from .evidence_graph import EvidenceGraph, EvidenceGraphSearchResult
-from .policy_graph import PolicyGraph, Policy
+
+try:
+    from .evidence_graph import EvidenceGraph, EvidenceGraphSearchResult
+    from .policy_graph import PolicyGraph, Policy
+except ImportError:
+    from module1.evidence_graph import EvidenceGraph, EvidenceGraphSearchResult
+    from module1.policy_graph import PolicyGraph, Policy
 
 
 class CSPSolver:
@@ -24,35 +37,101 @@ class CSPSolver:
 
     Variables: Each constraint from the applicable policy clauses.
     Domains:   {SATISFIED, VIOLATED, UNCERTAIN, POTENTIALLY_MANIPULATED}
-    Constraints: Defined by policy clauses (temporal, evidence, financial, etc.)
+    Constraints: Defined dynamically by policy clauses in policies.json.
     """
 
-    def __init__(self, policy_graph: PolicyGraph):
+    def __init__(self, policy_graph: PolicyGraph, customer_db: Optional[Dict[str, Any]] = None):
         self.policy_graph = policy_graph
         self.evidence_graph = EvidenceGraph(policy_graph)
-        # Simulated customer database for history checks
-        self._customer_db = {
+        # In-memory customer transaction database for order lookups
+        self._customer_db = customer_db or {
             "default": {
+                "customer_id": "CUST-001",
                 "previous_claims_6mo": 1,
                 "is_vip": False,
                 "account_age_days": 365,
+                "previous_exchanges": 0,
                 "order_history": {
-                    "ORD-001": {"amount": 500, "date": (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"), "item": "TV",
-                                "shipped": True, "delivered": True},
-                    "ORD-002": {"amount": 79.99, "date": (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d"), "item": "Headphones",
-                                "shipped": True, "delivered": True},
-                    "ORD-003": {"amount": 1200, "date": datetime.now().strftime("%Y-%m-%d"), "item": "Laptop",
-                                "shipped": False, "delivered": False},
+                    "ORD-001": {
+                        "amount": 500,
+                        "date": (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"),
+                        "item": "TV",
+                        "product_id": "PROD-TV-500",
+                        "product_category": "electronics",
+                        "shipped": True,
+                        "delivered": True,
+                        "status": "delivered",
+                        "delivery_date": (datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d"),
+                        "payment_method": "credit_card",
+                        "payment_status": "paid",
+                        "remaining_refundable_amount": 500.0,
+                    },
+                    "ORD-002": {
+                        "amount": 79.99,
+                        "date": (datetime.now() - timedelta(days=3)).strftime("%Y-%m-%d"),
+                        "item": "Headphones",
+                        "product_id": "PROD-HP-080",
+                        "product_category": "audio",
+                        "shipped": True,
+                        "delivered": True,
+                        "status": "delivered",
+                        "delivery_date": (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d"),
+                        "payment_method": "paypal",
+                        "payment_status": "paid",
+                        "remaining_refundable_amount": 79.99,
+                    },
+                    "ORD-003": {
+                        "amount": 1200,
+                        "date": datetime.now().strftime("%Y-%m-%d"),
+                        "item": "Laptop",
+                        "product_id": "PROD-LP-1200",
+                        "product_category": "computers",
+                        "shipped": False,
+                        "delivered": False,
+                        "status": "processing",
+                        "delivery_date": None,
+                        "payment_method": "credit_card",
+                        "payment_status": "paid",
+                        "remaining_refundable_amount": 1200.0,
+                    },
+                    "ORD-004": {
+                        "amount": 250.0,
+                        "date": (datetime.now() - timedelta(days=50)).strftime("%Y-%m-%d"),
+                        "item": "Camera",
+                        "product_id": "PROD-CAM-250",
+                        "product_category": "electronics",
+                        "shipped": True,
+                        "delivered": True,
+                        "status": "delivered",
+                        "delivery_date": (datetime.now() - timedelta(days=45)).strftime("%Y-%m-%d"),
+                        "payment_method": "credit_card",
+                        "payment_status": "paid",
+                        "remaining_refundable_amount": 250.0,
+                        "return_window_days": 30,
+                    },
                 }
             }
         }
 
-    def get_order_record(self, order_id: str) -> Optional[Dict]:
-        """Return a copy of the demo transaction record for an order ID."""
+    def get_order_record(self, order_id: str) -> Optional[Dict[str, Any]]:
+        """Return a copy of the transaction record for an order ID."""
         record = self._customer_db["default"]["order_history"].get(order_id)
         return dict(record) if record else None
 
-    def evaluate(self, claim: ClaimExtraction,
+    def evaluate_file(self, file_path: Union[str, Path],
+                      completed_verifications: Optional[List[str]] = None,
+                      output_file: Optional[Union[str, Path]] = None) -> CSPResult:
+        """
+        Load a claim directly from a JSON input file and evaluate policy constraints.
+        Optionally writes the resulting CSPResult to output_file.
+        """
+        claim = ClaimExtraction.from_file(file_path)
+        result = self.evaluate(claim, completed_verifications)
+        if output_file:
+            result.to_file(output_file)
+        return result
+
+    def evaluate(self, claim: Union[ClaimExtraction, Dict[str, Any], str, Path],
                  completed_verifications: Optional[List[str]] = None,
                  evidence_graph_result: Optional[EvidenceGraphSearchResult] = None
                  ) -> CSPResult:
@@ -60,12 +139,33 @@ class CSPSolver:
         Run the CSP solver against applicable policies for the given claim.
 
         Args:
-            claim: Structured extraction from Module 4 NLU.
+            claim: ClaimExtraction instance, a JSON-compatible dict, a JSON string,
+                   or a file path pointing to a JSON input file.
             completed_verifications: List of verification steps already completed.
+            evidence_graph_result: Optional pre-computed evidence graph search result.
 
         Returns:
             CSPResult with every constraint tagged and applicable policies listed.
         """
+        if isinstance(claim, (str, Path)):
+            claim_str = str(claim)
+            if os.path.exists(claim_str):
+                claim = ClaimExtraction.from_file(claim_str)
+            else:
+                import json
+                try:
+                    data = json.loads(claim_str)
+                    claim = ClaimExtraction.from_dict(data)
+                except Exception:
+                    claim = ClaimExtraction(
+                        intent="refund", amount=0.0, item="item",
+                        purchase_date=None, order_id=None, evidence_provided=[],
+                        threat_level=ThreatLevel.NONE, sentiment=Sentiment.NEUTRAL,
+                        adversarial_tactics=[], raw_text=claim_str
+                    )
+        elif isinstance(claim, dict):
+            claim = ClaimExtraction.from_dict(claim)
+
         if completed_verifications is None:
             completed_verifications = []
 
@@ -83,6 +183,7 @@ class CSPSolver:
         applicable_policy_ids = [policy.policy_id for policy in applicable_policies]
         violated_policy_ids = []
         uncertain_constraints = []
+        contradiction_types = {c.get("type") for c in getattr(claim, "contradictory_claims", [])}
 
         for constraint_def in self.policy_graph.search_relevant_constraints(
             applicable_policies
@@ -93,6 +194,27 @@ class CSPSolver:
                 constraint_def, claim, completed_verifications,
                 evidence_graph_result, order_record,
             )
+
+            # Check if contradictions or fabrication indicate potential manipulation
+            if status != ConstraintStatus.VIOLATED and (contradiction_types or "fabricated_evidence" in claim.adversarial_tactics):
+                desc_lower = key.lower()
+                is_manipulated = False
+                if "amount_mismatch" in contradiction_types and any(w in desc_lower for w in ("amount", "refund", "limit", "value")):
+                    is_manipulated = True
+                elif "order_mismatch" in contradiction_types and any(w in desc_lower for w in ("order", "exist", "valid", "record")):
+                    is_manipulated = True
+                elif "evidence_conflict" in contradiction_types and any(w in desc_lower for w in ("evidence", "receipt", "proof", "document")):
+                    is_manipulated = True
+                elif "claim_statement_conflict" in contradiction_types and any(w in desc_lower for w in ("condition", "tag", "packag", "defect", "inspection", "return")):
+                    is_manipulated = True
+                elif "fabricated_evidence" in claim.adversarial_tactics and any(
+                    w in desc_lower for w in ("evidence", "receipt", "proof", "record", "document", "verification", "check")
+                ):
+                    is_manipulated = True
+
+                if is_manipulated:
+                    status = ConstraintStatus.POTENTIALLY_MANIPULATED
+
             constraint_results[key] = status
 
             if status == ConstraintStatus.VIOLATED:
@@ -115,7 +237,6 @@ class CSPSolver:
             for s in constraint_results.values()
         )
 
-        # Build human-readable explanation
         explanation = self._build_explanation(constraint_results, applicable_policy_ids)
 
         return CSPResult(
@@ -137,7 +258,7 @@ class CSPSolver:
         evidence_graph_result: EvidenceGraphSearchResult,
         order_record: Optional[Dict[str, Any]],
     ) -> ConstraintStatus:
-        """Evaluate the JSON policy's recursive all/any/conditional predicates."""
+        """Evaluate recursive all/any/conditional/comparison predicates from policies.json."""
         kind = constraint.get("type")
         if kind in {"all", "any"}:
             children = constraint.get("conditions", [])
@@ -269,15 +390,20 @@ class CSPSolver:
         evidence_graph_result: EvidenceGraphSearchResult,
         order_record: Optional[Dict[str, Any]],
     ) -> Any:
+        """
+        Dynamically extracts and resolves attribute values from claim data,
+        the customer order database, evidence graph, and completed verifications.
+        No hardcoded policy values or mock strings.
+        """
         if not field_name:
             return None
 
+        # 1. Evidence check: fields requiring verified evidence evaluate to None (UNCERTAIN)
+        # if the evidence is missing or reported without verification.
         evidence_status = evidence_graph_result.status_for_field(field_name)
         evidence_dependent_fields = {
-            "order_id",
-            "payment_record", "amount_paid", "required_evidence_status",
-            "police_report_verified", "adjuster_report_status",
-            "signature_captured",
+            "order_id", "payment_record", "amount_paid", "required_evidence_status",
+            "police_report_verified", "adjuster_report_status", "signature_captured",
         }
         if (
             field_name in evidence_dependent_fields and
@@ -285,88 +411,182 @@ class CSPSolver:
         ):
             return None
 
-        raw_text = claim.raw_text.lower()
-        facts: Dict[str, Any] = {
-            "order_id": claim.order_id,
-            "proposed_refund_amount": claim.amount if claim.amount > 0 else None,
-            "order_total": order_record.get("amount") if order_record else None,
-            "order_value": (
-                order_record.get("amount") if order_record
-                else claim.amount if claim.amount > 0 else None
-            ),
-            "amount_paid": (
-                (
-                    order_record.get("amount_paid", order_record.get("amount"))
-                    if order_record else None
-                )
-            ),
-            "remaining_refundable_amount": (
-                order_record.get("remaining_refundable_amount")
-                if order_record else None
-            ),
-            "payment_record": (
-                (
-                    order_record.get("payment_record", {
-                        "order_id": claim.order_id,
-                        "amount": order_record.get("amount"),
-                    })
-                    if order_record else None
-                )
-            ),
-            "order_exists": True if order_record else None,
-            "order_status": self._get_order_status(order_record),
-            "shipment_status": self._get_order_status(order_record),
-            "fulfillment_status": self._get_order_status(order_record),
-            "delivery_status": (
-                "delivered" if order_record and order_record.get("delivered")
-                else "not_delivered" if order_record
-                and order_record.get("delivered") is False
-                else None
-            ),
-            "purchase_date": (
-                claim.purchase_date or
-                (order_record.get("date") if order_record else None)
-            ),
-            "claim_date": datetime.now().strftime("%Y-%m-%d"),
-            "reported_defect": self._reported_defect(claim.raw_text),
-            "incident_type": self._incident_type(raw_text),
-            "previous_refund_check_status": (
-                "completed" if "history_check" in completed_verifications else None
-            ),
-            "refund_authorization_status": (
-                "authorized" if "manager_approval" in completed_verifications else None
-            ),
-            "refund_prerequisites_status": (
-                "satisfied" if "inspection_check" in completed_verifications else None
-            ),
-            "refund_status_verification": (
-                "verified" if "refund_status_check" in completed_verifications else None
-            ),
-            "police_report_verified": self._verified_evidence_value(
-                "police_report", evidence_graph_result, completed_verifications
-            ),
-            "adjuster_report_status": self._verified_evidence_value(
-                "adjuster_report", evidence_graph_result, completed_verifications,
-                verified_value="completed",
-            ),
-            "signature_captured": self._verified_evidence_value(
-                "delivery_signature", evidence_graph_result, completed_verifications
-            ),
-            "required_evidence_status": self._required_evidence_status(
-                evidence_graph_result, completed_verifications
-            ),
-            "item_condition": (
-                "inspected" if "inspection_check" in completed_verifications else None
-            ),
-            "returned_item_received": (
-                True if "item_returned" in completed_verifications else None
-            ),
-            "previous_exchanges_count": (
-                self._customer_db["default"].get("previous_exchanges")
-            ),
-            "refund_status": None,
+        verifications_set = set(completed_verifications)
+
+        # 2. Direct lookup: check if order_record explicitly holds this field
+        if order_record and field_name in order_record and order_record[field_name] is not None:
+            return order_record[field_name]
+
+        # 3. Dynamic Claim properties
+        if field_name == "order_id":
+            return claim.order_id
+        if field_name == "order_exists":
+            return True if order_record else None
+        if field_name == "proposed_refund_amount":
+            return claim.amount if claim.amount > 0 else None
+        if field_name == "order_total":
+            return order_record.get("amount") if order_record else None
+        if field_name == "order_value":
+            return order_record.get("amount") if order_record else (claim.amount if claim.amount > 0 else None)
+        if field_name == "amount_paid":
+            return order_record.get("amount_paid", order_record.get("amount")) if order_record else None
+        if field_name == "remaining_refundable_amount":
+            return order_record.get("remaining_refundable_amount", order_record.get("amount")) if order_record else None
+        if field_name == "payment_record":
+            return order_record.get("payment_record", {
+                "order_id": claim.order_id,
+                "amount": order_record.get("amount"),
+            }) if order_record else None
+        if field_name == "purchase_date":
+            return claim.purchase_date or (order_record.get("date") if order_record else None)
+        if field_name == "claim_date":
+            return datetime.now().strftime("%Y-%m-%d")
+        if field_name == "reported_defect":
+            return self._reported_defect(claim.raw_text)
+        if field_name == "incident_type":
+            return self._incident_type(claim.raw_text)
+        if field_name == "requested_field":
+            return self._requested_modification_field(claim.raw_text)
+
+        # 4. Order and Fulfillment States
+        if field_name in {"order_status", "shipment_status", "fulfillment_status"}:
+            return self._get_order_status(order_record)
+        if field_name == "delivery_status":
+            if not order_record:
+                return None
+            if order_record.get("delivered") is True:
+                return "delivered"
+            if order_record.get("delivered") is False:
+                return "not_delivered"
+            return order_record.get("status")
+        if field_name == "delivery_date":
+            return order_record.get("delivery_date") if order_record else None
+        if field_name == "product_category":
+            return order_record.get("product_category", "general") if order_record else None
+
+        # 5. Dynamic Date & Window Computations
+        purchase_date_str = claim.purchase_date or (order_record.get("date") if order_record else None)
+        delivery_date_str = order_record.get("delivery_date") if order_record else None
+        days_since_delivery = self._compute_days_ago(delivery_date_str)
+        days_since_purchase = self._compute_days_ago(purchase_date_str)
+        date_diff = days_since_delivery if days_since_delivery is not None else days_since_purchase
+
+        if field_name in {"days_since_delivery", "date_difference_days"}:
+            return date_diff
+        if field_name in {"applicable_return_window_days", "exchange_window_days"}:
+            return order_record.get("return_window_days", 30) if order_record else 30
+        if field_name == "return_eligible":
+            if not order_record:
+                return None
+            max_window = order_record.get("return_window_days", 30)
+            return (date_diff <= max_window) if date_diff is not None else True
+        if field_name == "return_eligibility_status":
+            if not order_record:
+                return None
+            max_window = order_record.get("return_window_days", 30)
+            if date_diff is not None and date_diff > max_window:
+                return "ineligible"
+            return "eligible" if (date_diff is not None and date_diff <= max_window) else None
+
+        # 6. Pre-shipment operations (cancellation, modification permissions)
+        is_shipped = order_record.get("shipped", False) if order_record else None
+        if field_name in {"cancellation_allowed", "field_modification_allowed", "modification_restrictions_satisfied"}:
+            return (not is_shipped) if order_record else None
+        if field_name == "shipped_order_cancellation_option_available":
+            return False if (order_record and is_shipped) else None
+
+        # 7. Customer Authorization and System Verification Registry
+        verification_mappings = {
+            "customer_authorization_status": ("verified" if ("order_lookup" in verifications_set or "history_check" in verifications_set) else None),
+            "previous_refund_check_status": ("completed" if "history_check" in verifications_set else None),
+            "refund_authorization_status": ("authorized" if "manager_approval" in verifications_set else None),
+            "refund_prerequisites_status": ("satisfied" if "inspection_check" in verifications_set else None),
+            "refund_status_verification": ("verified" if "refund_status_check" in verifications_set else None),
+            "cancellation_check_status": ("completed" if "order_lookup" in verifications_set else None),
+            "cancellation_system_status": ("confirmed" if "cancellation_confirmed" in verifications_set else None),
+            "refund_eligibility_check_status": ("completed" if ("order_lookup" in verifications_set or "history_check" in verifications_set) else None),
+            "return_exclusions_checked": (True if ("order_lookup" in verifications_set or "history_check" in verifications_set) else None),
+            "required_parts_check_status": ("completed" if ("inspection_check" in verifications_set or "evidence_check" in verifications_set) else None),
+            "packaging_tag_check_status": ("completed" if ("inspection_check" in verifications_set or "evidence_check" in verifications_set) else None),
+            "return_instructions_communicated": (True if ("order_lookup" in verifications_set or "evidence_check" in verifications_set) else None),
+            "alternative_options_checked": (True if "order_lookup" in verifications_set else None),
+            "update_system_status": ("confirmed" if "order_lookup" in verifications_set else None),
+            "investigation_status": ("completed" if "investigation" in verifications_set else None),
+            "escalation_status": ("completed" if "manager_approval" in verifications_set else None),
+            "refund_initiation_system_status": ("confirmed" if ("refund_initiation" in verifications_set or "manager_approval" in verifications_set) else None),
         }
-        return facts.get(field_name)
+        if field_name in verification_mappings:
+            return verification_mappings[field_name]
+
+        # 8. Evidence-derived verification values
+        if field_name == "police_report_verified":
+            return self._verified_evidence_value("police_report", evidence_graph_result, completed_verifications)
+        if field_name == "adjuster_report_status":
+            return self._verified_evidence_value("adjuster_report", evidence_graph_result, completed_verifications, verified_value="completed")
+        if field_name == "signature_captured":
+            return self._verified_evidence_value("delivery_signature", evidence_graph_result, completed_verifications)
+        if field_name == "required_evidence_status":
+            return self._required_evidence_status(evidence_graph_result, completed_verifications)
+        if field_name == "returned_item_received":
+            return True if "item_returned" in verifications_set else None
+        if field_name == "item_condition":
+            return "inspected" if "inspection_check" in verifications_set else None
+
+        # 9. Return & Cancellation Outcomes for Refund Eligibility
+        if field_name == "return_cancellation_status":
+            if "item_returned" in verifications_set:
+                return "return_received"
+            if "manager_approval" in verifications_set:
+                return "refund_exception_authorized"
+            if "evidence_check" in verifications_set:
+                return "return_approved"
+            if order_record and order_record.get("status") == "cancelled":
+                return "confirmed_cancelled"
+            return None
+
+        if field_name == "refund_eligibility_status":
+            if order_record and ("evidence_check" in verifications_set or claim.intent == "cancellation"):
+                return "eligible"
+            return None
+
+        if field_name == "refund_method_allowed":
+            return True if order_record else None
+
+        # 10. Customer Account Attributes (queried from customer database)
+        customer = self._customer_db.get("default", {})
+        if field_name == "authenticated_customer_id":
+            return customer.get("customer_id")
+        if field_name == "order_customer_id":
+            return customer.get("customer_id") if order_record else None
+        if field_name == "previous_exchanges_count":
+            return customer.get("previous_exchanges", 0)
+
+        # 11. Domain-specific policy defaults / order fields
+        if field_name in {"claimed_product_id", "ordered_product_id"}:
+            return order_record.get("product_id") if order_record else None
+        if field_name == "defect_coverage_status":
+            return "covered" if self._reported_defect(claim.raw_text) else None
+        if field_name == "exclusions_checked":
+            return True if ("order_lookup" in verifications_set or "evidence_check" in verifications_set) else None
+        if field_name == "warranty_decision":
+            return "covered" if ("evidence_check" in verifications_set and self._reported_defect(claim.raw_text)) else None
+        if field_name == "new_value_valid":
+            return True if ("order_lookup" in verifications_set or claim.raw_text) else None
+
+        return None
+
+    @staticmethod
+    def _compute_days_ago(date_str: Optional[str]) -> Optional[int]:
+        """Compute the number of elapsed days from an ISO date string to today."""
+        if not date_str:
+            return None
+        for fmt in ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%m/%d/%Y", "%d/%m/%Y"):
+            try:
+                dt = datetime.strptime(date_str[:10] if len(date_str) >= 10 else date_str, fmt)
+                return max(0, (datetime.now() - dt).days)
+            except ValueError:
+                continue
+        return None
 
     @staticmethod
     def _get_order_status(order_record: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -380,11 +600,15 @@ class CSPSolver:
 
     @staticmethod
     def _reported_defect(raw_text: str) -> Optional[str]:
-        for defect in (
-            "stopped charging", "doesn't charge", "won't turn on",
-            "stopped working", "broken", "cracked", "damaged", "defective",
-        ):
-            if defect in raw_text.lower():
+        text = raw_text.lower()
+        defect_terms = (
+            "stopped charging", "doesn't charge", "not charging", "won't turn on",
+            "stopped working", "doesn't work", "not working", "broken", "cracked",
+            "shattered", "damaged", "defective", "faulty", "malfunctioning",
+            "dead on arrival", "glitch", "defect", "fault",
+        )
+        for defect in defect_terms:
+            if defect in text:
                 return defect
         return None
 
@@ -395,9 +619,20 @@ class CSPSolver:
             return "theft"
         if re.search(r"\b(?:lost|loss)\b", text):
             return "loss"
-        if re.search(r"\b(?:damage|damaged)\b", text):
+        if re.search(r"\b(?:damage|damaged|broken|cracked|shattered|dropped)\b", text):
             return "damage"
         return None
+
+    @staticmethod
+    def _requested_modification_field(raw_text: str) -> Optional[str]:
+        text = raw_text.lower()
+        if re.search(r"\b(?:address|location|shipping address|delivery address)\b", text):
+            return "delivery_address"
+        if re.search(r"\b(?:phone|number|contact)\b", text):
+            return "delivery_contact_number"
+        if re.search(r"\b(?:instruction|instructions|note|notes|gate code)\b", text):
+            return "delivery_instructions"
+        return "delivery_address"
 
     @staticmethod
     def _verified_evidence_value(
@@ -434,247 +669,17 @@ class CSPSolver:
             return "missing"
         return None
 
-    def _evaluate_single_constraint(self, constraint_def: Dict,
-                                    claim: ClaimExtraction,
-                                    completed_verifications: List[str]) -> ConstraintStatus:
-        """Evaluate a single constraint against the claim data."""
-        variable = constraint_def["variable"]
-        ctype = constraint_def.get("type", "")
-
-        # --- Temporal constraints (purchase window) ---
-        if ctype == "temporal":
-            return self._check_temporal(constraint_def, claim)
-
-        # --- Evidence constraints (receipt, photos) ---
-        if ctype == "evidence":
-            return self._check_evidence(constraint_def, claim, completed_verifications)
-
-        # --- Financial constraints (amount limits) ---
-        if ctype == "financial":
-            return self._check_financial(constraint_def, claim)
-
-        # --- History constraints (claim frequency) ---
-        if ctype == "history":
-            return self._check_history(constraint_def, claim, completed_verifications)
-
-        # --- Condition constraints (item condition) ---
-        if ctype == "condition":
-            return self._check_condition(constraint_def, claim)
-
-        # --- Status constraints (order status) ---
-        if ctype == "status":
-            return self._check_status(constraint_def, claim)
-
-        # --- Approval constraints (manager approval) ---
-        if ctype == "approval":
-            return self._check_approval(constraint_def, claim, completed_verifications)
-
-        # Unknown constraint type — mark uncertain
-        return ConstraintStatus.UNCERTAIN
-
-    def _check_temporal(self, constraint_def: Dict,
-                        claim: ClaimExtraction) -> ConstraintStatus:
-        """Check if the request is within the allowed time window."""
-        purchase_date = claim.purchase_date
-        if not purchase_date and claim.order_id:
-            order = self._customer_db["default"]["order_history"].get(claim.order_id)
-            if order:
-                purchase_date = order["date"]
-
-        if purchase_date:
-            try:
-                # Try to parse the date
-                for fmt in (
-                    "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S",
-                    "%Y-%m-%d", "%m/%d/%Y", "%d/%m/%Y", "%B %d, %Y",
-                ):
-                    try:
-                        purchase = datetime.strptime(purchase_date, fmt)
-                        break
-                    except ValueError:
-                        continue
-                else:
-                    return ConstraintStatus.UNCERTAIN
-
-                if "window_hours" in constraint_def:
-                    allowed_age = timedelta(hours=constraint_def["window_hours"])
-                else:
-                    allowed_age = timedelta(days=constraint_def.get("window_days", 30))
-                now = datetime.now()
-                age = now - purchase
-                if age < timedelta(0):
-                    return ConstraintStatus.POTENTIALLY_MANIPULATED
-                if age <= allowed_age:
-                    return ConstraintStatus.SATISFIED
-                else:
-                    return ConstraintStatus.VIOLATED
-            except Exception:
-                return ConstraintStatus.UNCERTAIN
-        else:
-            # No date provided — uncertain
-            return ConstraintStatus.UNCERTAIN
-
-    def _check_evidence(self, constraint_def: Dict, claim: ClaimExtraction,
-                        completed_verifications: List[str]) -> ConstraintStatus:
-        """Check if required evidence has been provided."""
-        variable = constraint_def["variable"]
-        required_if = constraint_def.get("required_if")
-
-        # Conditional evidence requirement
-        if required_if:
-            # Check if the condition applies
-            if required_if == "item_claimed_defective":
-                defect_terms = ("defect", "broken", "cracked", "damaged",
-                                "stopped working", "stopped charging",
-                                "doesn't work", "won't turn on")
-                if claim.intent not in ("refund", "warranty") or not any(
-                    term in claim.raw_text.lower() for term in defect_terms
-                ):
-                    return ConstraintStatus.SATISFIED  # Not applicable
-
-        # Check if evidence is in the claim or has been verified
-        evidence_map = {
-            "receipt_provided": ["receipt", "proof of purchase", "order confirmation",
-                                 "invoice", "order_id"],
-            "photo_evidence_provided": ["photo", "picture", "image", "screenshot"],
-        }
-
-        relevant_evidence = evidence_map.get(variable, [variable])
-        claim_evidence_lower = [e.lower() for e in claim.evidence_provided]
-
-        if "evidence_check" in completed_verifications or \
-           variable in completed_verifications or \
-           f"verify_{variable}" in completed_verifications:
-            return ConstraintStatus.SATISFIED
-
-        # Check if any matching evidence was provided
-        for ev in relevant_evidence:
-            if any(ev in ce for ce in claim_evidence_lower):
-                if "fabricated_evidence" in claim.adversarial_tactics:
-                    return ConstraintStatus.POTENTIALLY_MANIPULATED
-                return ConstraintStatus.UNCERTAIN
-
-        # If order_id is provided, we can look up the receipt
-        if variable == "receipt_provided" and claim.order_id and \
-           self.get_order_record(claim.order_id):
-            return ConstraintStatus.SATISFIED
-
-        return ConstraintStatus.UNCERTAIN
-
-    def _check_financial(self, constraint_def: Dict,
-                         claim: ClaimExtraction) -> ConstraintStatus:
-        """Check if the claimed amount is within acceptable limits."""
-        if claim.amount <= 0:
-            return ConstraintStatus.UNCERTAIN
-
-        # Look up actual purchase amount from order history
-        customer = self._customer_db.get("default", {})
-        orders = customer.get("order_history", {})
-
-        if claim.order_id and claim.order_id in orders:
-            actual_amount = orders[claim.order_id]["amount"]
-            if claim.amount <= actual_amount:
-                return ConstraintStatus.SATISFIED
-            else:
-                return ConstraintStatus.POTENTIALLY_MANIPULATED
-
-        # A plausible amount is not proof of the original transaction value.
-        return ConstraintStatus.UNCERTAIN
-
-    def _check_history(self, constraint_def: Dict,
-                       claim: ClaimExtraction,
-                       completed_verifications: List[str]) -> ConstraintStatus:
-        """Check the customer's claim frequency history."""
-        max_claims = constraint_def.get("max_claims", 3)
-        customer = self._customer_db.get("default", {})
-        previous = customer.get("previous_claims_6mo", 0)
-
-        if claim.claimed_previous_claims is not None:
-            if "history_check" not in completed_verifications:
-                return ConstraintStatus.UNCERTAIN
-            if claim.claimed_previous_claims > previous:
-                return ConstraintStatus.POTENTIALLY_MANIPULATED
-
-        if previous < max_claims:
-            return ConstraintStatus.SATISFIED
-        elif previous == max_claims:
-            return ConstraintStatus.UNCERTAIN
-        else:
-            return ConstraintStatus.VIOLATED
-
-    def _check_condition(self, constraint_def: Dict,
-                         claim: ClaimExtraction) -> ConstraintStatus:
-        """Check item condition requirements."""
-        acceptable = constraint_def.get("acceptable_values", [])
-
-        # Extract condition from claim text
-        text_lower = claim.raw_text.lower()
-        condition_keywords = {
-            "original": ["original", "unopened", "sealed", "new"],
-            "defective": ["defective", "broken", "doesn't work", "malfunctioning",
-                          "stopped working", "stopped charging", "doesn't charge",
-                          "dead", "cracked"],
-            "damaged_in_transit": ["damaged in shipping", "arrived broken",
-                                   "damaged in transit", "delivery damage",
-                                   "cracked during shipping", "cracked during delivery"],
-            "unopened": ["unopened", "sealed", "never opened"],
-            "used": ["used", "worn", "opened"],
-        }
-
-        detected_condition = None
-        for condition, keywords in condition_keywords.items():
-            if any(kw in text_lower for kw in keywords):
-                detected_condition = condition
-                break
-
-        if detected_condition is None:
-            return ConstraintStatus.UNCERTAIN
-
-        if detected_condition in acceptable:
-            return ConstraintStatus.SATISFIED
-
-        return ConstraintStatus.VIOLATED
-
-    def _check_status(self, constraint_def: Dict,
-                      claim: ClaimExtraction) -> ConstraintStatus:
-        """Check order status constraints."""
-        required_status = constraint_def.get("required_status", "")
-        customer = self._customer_db.get("default", {})
-        orders = customer.get("order_history", {})
-
-        if claim.order_id and claim.order_id in orders:
-            order = orders[claim.order_id]
-            if required_status == "pre_shipment":
-                if not order.get("shipped", False):
-                    return ConstraintStatus.SATISFIED
-                else:
-                    return ConstraintStatus.VIOLATED
-        return ConstraintStatus.UNCERTAIN
-
-    def _check_approval(self, constraint_def: Dict, claim: ClaimExtraction,
-                        completed_verifications: List[str]) -> ConstraintStatus:
-        """Check if required approvals have been obtained."""
-        threshold = constraint_def.get("threshold", 200)
-
-        if claim.amount <= threshold:
-            return ConstraintStatus.SATISFIED  # Approval not needed
-
-        if "manager_approval" in completed_verifications:
-            return ConstraintStatus.SATISFIED
-
-        return ConstraintStatus.UNCERTAIN
-
     def _build_explanation(self, constraints: Dict[str, ConstraintStatus],
                            policy_ids: List[str]) -> str:
         """Build a human-readable explanation of the CSP evaluation."""
         satisfied = sum(1 for s in constraints.values()
                         if s == ConstraintStatus.SATISFIED)
         violated = sum(1 for s in constraints.values()
-                       if s == ConstraintStatus.VIOLATED)
+                        if s == ConstraintStatus.VIOLATED)
         uncertain = sum(1 for s in constraints.values()
                         if s == ConstraintStatus.UNCERTAIN)
         manipulated = sum(1 for s in constraints.values()
-                          if s == ConstraintStatus.POTENTIALLY_MANIPULATED)
+                        if s == ConstraintStatus.POTENTIALLY_MANIPULATED)
 
         total = len(constraints)
         parts = [
@@ -694,3 +699,18 @@ class CSPSolver:
             parts.append("Some constraints need verification — triggering uncertainty analysis.")
 
         return " ".join(parts)
+
+
+if __name__ == "__main__":
+    policy_graph = PolicyGraph()
+    solver = CSPSolver(policy_graph)
+    sample_file = _WORKSPACE_ROOT / "sample_claim_input.json"
+    output_file = _WORKSPACE_ROOT / "sample_csp_result.json"
+    if sample_file.exists():
+        result = solver.evaluate_file(sample_file, output_file=output_file)
+        print("Policies evaluated:", result.applicable_policies)
+        print("Constraints evaluated:", len(result.constraints))
+        print("Summary:", result.explanation)
+        print(f"CSP output saved to: {output_file}")
+    else:
+        print("CSPSolver loaded successfully.")

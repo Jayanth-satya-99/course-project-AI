@@ -1,0 +1,42 @@
+{
+  "intent": "refund",
+  "amount": 500.0,
+  "item": "TV",
+  "purchase_date": "2026-10-26",
+  "order_id": "ORD-001",
+  "evidence_provided": [
+    "receipt",
+    "photo"
+  ],
+  "threat_level": "none",
+  "sentiment": "cooperative",
+  "adversarial_tactics": [],
+  "raw_text": "Hi, I bought a TV for $500 (Order ORD-001) last week. The screen cracked during shipping. I have the receipt and photo. Can I get a refund?",
+  "claimed_previous_claims": null,
+  "contradictory_claims": [],
+  "supporting_evidence": [
+    {
+      "evidence_type": "receipt",
+      "description": "Customer referenced receipt",
+      "snippet": "I have the receipt and photo.",
+      "confidence": 0.95,
+      "status": "reported"
+    },
+    {
+      "evidence_type": "photo",
+      "description": "Customer referenced photo",
+      "snippet": "receipt and photo. Can I get a refund?",
+      "confidence": 0.95,
+      "status": "reported"
+    }
+  ],
+  "emotional_appeals": [],
+  "threats": [],
+  "persuasive_strategies": [],
+  "conversation_history": [
+    {
+      "role": "user",
+      "content": "Hi, I bought a TV for $500 (Order ORD-001) last week. The screen cracked during shipping. I have the receipt and photo. Can I get a refund?"
+    }
+  ]
+}

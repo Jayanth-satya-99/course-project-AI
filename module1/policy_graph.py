@@ -129,6 +129,19 @@ class PolicyGraph:
             "return_request": "return",
             "modification": "order_modification",
             "modify_order": "order_modification",
+            "change_order": "order_modification",
+            "update_order": "order_modification",
+            "order_update": "order_modification",
+            "shipping": "shipment",
+            "tracking": "shipment",
+            "delivery_request": "delivery",
+            "replace": "exchange",
+            "swap": "exchange",
+            "warranty_claim": "warranty",
+            "insurance_claim": "insurance",
+            "pay": "payment",
+            "charge": "payment",
+            "complaint": "refund",
         }
         policy_type = aliases.get(intent_lower, intent_lower)
         policy = self.policies.get(policy_type)

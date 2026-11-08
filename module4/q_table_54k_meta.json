@@ -1,0 +1,18 @@
+{
+  "total_states": 54000,
+  "num_actions": 6,
+  "epochs": 5,
+  "learning_rate": 0.2,
+  "discount_factor": 0.9,
+  "source_dataset": "module4/q_learning_pipeline_dataset.csv",
+  "total_transitions": 605490,
+  "training_time_seconds": 7.32,
+  "greedy_action_distribution": {
+    "APPROVE": 381,
+    "REJECT": 23693,
+    "ASK_FOR_EVIDENCE": 9207,
+    "PERFORM_VERIFICATION": 5152,
+    "PROPOSE_ALTERNATIVE": 8275,
+    "ESCALATE": 7292
+  }
+}

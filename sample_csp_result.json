@@ -1,0 +1,153 @@
+{
+  "constraints": {
+    "REF_C1:Order and payment records must be available": "SATISFIED",
+    "REF_C2:Cancellation or return outcome must be verified": "UNCERTAIN",
+    "REF_C3:Refund eligibility must be established": "UNCERTAIN",
+    "REF_C4:Original amount paid must be available": "SATISFIED",
+    "REF_C5:Previously issued refunds must be checked": "UNCERTAIN",
+    "REF_C6:Eligible refund amount must not exceed the remaining refundable amount": "SATISFIED",
+    "REF_C7:Refund amount must not be negative": "SATISFIED",
+    "REF_C8:Refund must be authorized": "UNCERTAIN",
+    "REF_C9:Required return and inspection checks must be complete": "UNCERTAIN",
+    "REF_C10:Refund method must be permitted": "SATISFIED",
+    "REF_C11:Refund initiation requires system confirmation": "UNCERTAIN",
+    "REF_C12:Completed status requires completion confirmation": "UNCERTAIN",
+    "REF_C13:Refund status must be retrieved from the payment or order system": "UNCERTAIN",
+    "REF_C14:Failed or uncertain refund must be investigated or escalated": "UNCERTAIN"
+  },
+  "applicable_policies": [
+    "P_REFUND"
+  ],
+  "violated_policies": [],
+  "uncertain_constraints": [
+    "REF_C2:Cancellation or return outcome must be verified",
+    "REF_C3:Refund eligibility must be established",
+    "REF_C5:Previously issued refunds must be checked",
+    "REF_C8:Refund must be authorized",
+    "REF_C9:Required return and inspection checks must be complete",
+    "REF_C11:Refund initiation requires system confirmation",
+    "REF_C12:Completed status requires completion confirmation",
+    "REF_C13:Refund status must be retrieved from the payment or order system",
+    "REF_C14:Failed or uncertain refund must be investigated or escalated"
+  ],
+  "has_uncertain": true,
+  "has_manipulated": false,
+  "explanation": "Evaluated 14 constraints across policies P_REFUND. Results: 5 satisfied, 0 violated, 9 uncertain, 0 potentially manipulated. Some constraints need verification \u2014 triggering uncertainty analysis.",
+  "evidence_graph": {
+    "applicable_policy_ids": [
+      "P_REFUND"
+    ],
+    "required_evidence": [
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C1",
+        "field": "order_id",
+        "label": "Order identifier and transaction record",
+        "evidence_types": "order_id",
+        "status": "verified"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C1",
+        "field": "payment_record",
+        "label": "Payment or purchase transaction record",
+        "evidence_types": "transaction_record,receipt,payment_confirmation,bank_statement",
+        "status": "verified"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C2",
+        "field": "return_cancellation_status",
+        "label": "Verified return or cancellation outcome",
+        "evidence_types": "return_confirmation,cancellation_confirmation",
+        "status": "missing"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C4",
+        "field": "amount_paid",
+        "label": "Original amount paid from the transaction record",
+        "evidence_types": "transaction_record,receipt,payment_confirmation,bank_statement",
+        "status": "verified"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C5",
+        "field": "previous_refund_check_status",
+        "label": "Previous refund history check",
+        "evidence_types": "refund_history",
+        "status": "missing"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C9",
+        "field": "refund_prerequisites_status",
+        "label": "Return receipt and required inspection checks",
+        "evidence_types": "return_confirmation,inspection_report",
+        "status": "missing"
+      },
+      {
+        "policy_id": "P_REFUND",
+        "constraint_id": "REF_C13",
+        "field": "refund_status_verification",
+        "label": "Refund status retrieved from the payment or order system",
+        "evidence_types": "refund_confirmation",
+        "status": "missing"
+      }
+    ],
+    "provided_evidence": [
+      {
+        "type": "order_id",
+        "status": "verified"
+      },
+      {
+        "type": "photo",
+        "status": "reported",
+        "snippet": "receipt and photo. Can I get a refund?",
+        "confidence": 0.95
+      },
+      {
+        "type": "receipt",
+        "status": "reported",
+        "snippet": "I have the receipt and photo.",
+        "confidence": 0.95
+      },
+      {
+        "type": "transaction_record",
+        "status": "verified"
+      }
+    ],
+    "evidence_links": [
+      {
+        "evidence_type": "order_id",
+        "constraint_id": "REF_C1",
+        "field": "order_id",
+        "status": "verified"
+      },
+      {
+        "evidence_type": "transaction_record",
+        "constraint_id": "REF_C1",
+        "field": "payment_record",
+        "status": "verified"
+      },
+      {
+        "evidence_type": "receipt",
+        "constraint_id": "REF_C1",
+        "field": "payment_record",
+        "status": "verified"
+      },
+      {
+        "evidence_type": "transaction_record",
+        "constraint_id": "REF_C4",
+        "field": "amount_paid",
+        "status": "verified"
+      },
+      {
+        "evidence_type": "receipt",
+        "constraint_id": "REF_C4",
+        "field": "amount_paid",
+        "status": "verified"
+      }
+    ]
+  }
+}

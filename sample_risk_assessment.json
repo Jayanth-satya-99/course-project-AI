@@ -1,0 +1,18 @@
+{
+  "fraud_probability": 0.22,
+  "evidence_reliability": 0.7,
+  "evidence_strength": "moderate",
+  "risk_factors": [],
+  "recommendation": "LOW RISK: Minor concerns noted. Proceed with standard verification steps.",
+  "posterior_details": {
+    "P(legitimate)": 0.78,
+    "P(suspicious)": 0.16,
+    "P(fraudulent)": 0.06,
+    "P(evidence_strong)": 0.0,
+    "P(evidence_moderate)": 1.0,
+    "P(evidence_weak)": 0.0,
+    "P(evidence_fabricated)": 0.0,
+    "P(temporal_aligned)": 1.0,
+    "P(statement_consistent)": 1.0
+  }
+}
